@@ -73,7 +73,7 @@ bool funPalindromeCheck(int x) {
 		return false;
 	}
 	int y=0,z=x;
-	while(x>0){
+	while(z>0){
 		y+=z%10;
 		y*=10;
 		z/=10;
