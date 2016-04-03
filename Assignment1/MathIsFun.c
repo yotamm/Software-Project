@@ -74,10 +74,6 @@ bool funPalindromeCheck(int x) {
 	}
 	int y=0,z=x;
 	while(z>0){
-<<<<<<< HEAD
-=======
-		y+=z%10;
->>>>>>> 85609e9af679178bd2b792df3c26a71802dee5c1
 		y*=10;
 		y+=z%10;
 		z/=10;
