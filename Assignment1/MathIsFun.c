@@ -13,7 +13,7 @@
 int funSqrt(int x);
 
 int funPow(int x, int n, int d) {
-	if(n>2){
+	if(n>=2){
 		if (n%2==0){
 			int result=funPow(x,n/2,d);
 			return (result*result)%d;
@@ -73,9 +73,9 @@ bool funPalindromeCheck(int x) {
 		return false;
 	}
 	int y=0,z=x;
-	while(x>0){
-		y+=z%10;
+	while(z>0){
 		y*=10;
+		y+=z%10;
 		z/=10;
 	}
 	if(y==x){
