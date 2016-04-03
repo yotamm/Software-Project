@@ -3,9 +3,7 @@
 
 int main(void){
 	int user_choice, x, n, d, val;
-	setvbuf(stderr, NULL, _IONBF, 0);
-	setvbuf(stdout, NULL, _IONBF, 0);
-	printf("Welcome to Math Is Fun - beta version\nSupported operations are:\n1 - Power calculation\n2 - Prime test\n3 - Palindrome test\nPlease enter operation number (1/2/3):\n");
+	printf("Welcome to Math Is Fun - beta version\nSupported operations are:\n1 - Power Calculation\n2 - Prime Check\n3 - Palindrome Check\nPlease enter operation number (1/2/3):\n");
 	scanf("%d",&user_choice);
 	switch (user_choice){
 		case 1:
