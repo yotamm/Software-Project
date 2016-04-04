@@ -13,20 +13,21 @@
 int funSqrt(int x);
 
 int funPow(int x, int n, int d) {
-	if(n>=2){
-		if (n%2==0){
-			int result=funPow(x,n/2,d);
-			return (result*result)%d;
-		}
-		else{
-			int result=funPow(x,(n-1)/2,d);
-			return (result*result*x)%d;
-		}
+	int result = 0;
+	if(d==1)
+		return 0; //for any x and n, (x^n)mod1 = 0
+	if(n==0)
+		return 1%d;
+	if(n==1)
+		return (x<0 ? (x+d)%d : x%d);
+	if (n%2==0){
+		result= funPow(x,n/2,d);
+		return ((result*result)%d);
 	}
-	while (x<0){
-		x+=d;
+	else{
+		result= funPow(x,(n-1)/2,d);
+		return (((result*result)*(x%d))%d);
 	}
-	return x%d;
 }
 
 int funSqrt(int x) {
@@ -53,6 +54,8 @@ int funSqrt(int x) {
 bool funPrimeCheck(int x) {
 	bool res = true; //for now "x is prime"
 	int sqrt_x = funSqrt(x);
+	if(x<=1)
+		return false;
 	for(int i=2; i<=sqrt_x; i++)
 		if(x%i == 0)
 			res = false; //i is a divisor of x, therefore x is not prime
