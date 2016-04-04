@@ -18,8 +18,10 @@ int funPow(int x, int n, int d) {
 		return 0; //for any x and n, (x^n)mod1 = 0
 	if(n==0)
 		return 1%d;
+	while(x<0)
+		x+=d;
 	if(n==1)
-		return (x<0 ? (x+d)%d : x%d);
+		return x%d;
 	if (n%2==0){
 		result= funPow(x,n/2,d);
 		return ((result*result)%d);
