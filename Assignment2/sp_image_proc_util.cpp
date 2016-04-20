@@ -10,11 +10,13 @@ using namespace std;
 using namespace cv;
 
 #define THIRD 0.33
+#define MAT_NUM_COLS 128
 
 /*
  * inits new int mat[nRows][nCols] using malloc
  */
 int** initIMat(int nRows, int nCols) {
+	//~~~tested and works~~~
 	int** theArray;
 	theArray = (int**) malloc(nRows*sizeof(int*));
 	for (int i = 0; i < nRows; i++)
@@ -26,6 +28,7 @@ int** initIMat(int nRows, int nCols) {
  * inits new double mat[nRows][nCols] using malloc
  */
 double** initDMat(int nRows, int nCols) {
+	//~~~tested and works~~~
 	double** theArray;
 	theArray = (double**) malloc(nRows*sizeof(double*));
 	for (int i = 0; i < nRows; i++)
@@ -45,6 +48,7 @@ double** initDMat(int nRows, int nCols) {
  *  otherwise a two dimensional array representing the histogram.
  */
 int** spGetRGBHist(char* str, int nBins){
+	//~~~should work, almost all from ppt~~
 	  Mat src;
 	  /// Load image
 	  src = imread(str, CV_LOAD_IMAGE_COLOR);
@@ -124,6 +128,8 @@ double spRGBHistL2Distance(int** histA, int** histB, int nBins){
  * 		   nFeatures, and the actual features will be returned.
  */
 double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
+	//~~~tested and works~~~
+
 	Mat image;
 	if(str == NULL || nFeatures == NULL || maxNFeautres <= 0) //bad args
 		return NULL;
@@ -135,31 +141,25 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
 		return NULL;
 
 	//init res_mat
-	double** res_mat = initDMat(*nFeatures, 128);
+	double** res_mat = initDMat(*nFeatures, MAT_NUM_COLS);
 	if(res_mat == NULL) //malloc failed
 		return NULL;
 
 	//Calculate descriptors
-	Ptr<FeatureDetector> featureDetector = new FeatureDetector();
 	vector<KeyPoint> keypoints;
-	featureDetector->detect(image, keypoints);
-	Ptr<DescriptorExtractor> featureExtractor = new FeatureDetector();
+	Ptr<BRISK> det_Brisk = BRISK::create();
+	det_Brisk->detect(image, keypoints);
+	delete det_Brisk;
+
+	Ptr<BRISK> ext_Brisk = BRISK::create();
 	Mat descriptors;
-	featureExtractor->compute(image, keypoints, descriptors);
+	ext_Brisk->compute(image, keypoints, descriptors);
+	delete ext_Brisk;
 
 	//adjust res_mat
-	//for(int i=0; i<*nFeatures; i++)
-	//	for(int j=0; j<128; j++)
-	//		res_mat[i][j] = descriptors.at<double>(i,j);
-
-	//draw the detected keypoint just to check
-	Mat outputImage;
-	Scalar keypointColor = Scalar(0, 0, 255);     // Red keypoints.
-	drawKeypoints(image, keypoints, outputImage, keypointColor, DrawMatchesFlags::DEFAULT);
-	namedWindow("Output");
-	imshow("Output", outputImage);
-	char c = ' ';
-	while ((c = waitKey(0)) != 'q');
+	for(int i=0; i<*nFeatures; i++)
+		for(int j=0; j< MAT_NUM_COLS; j++)
+			res_mat[i][j] = descriptors.at<double>(i,j);
 
 	return res_mat;
 }

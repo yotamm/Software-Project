@@ -8,7 +8,8 @@ using namespace std;
 
 int main() {
 	int temp = 100;
-	spGetSiftDescriptors("img9.png", 512, &temp);
+	char* img = "img9.png";
+	spGetSiftDescriptors(img, 512, &temp);
 	//Mat image, gray_image;
 	//image = imread("img9.png", CV_LOAD_IMAGE_COLOR);
 	//namedWindow( "Display window", WINDOW_AUTOSIZE );
