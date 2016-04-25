@@ -10,7 +10,9 @@ using namespace std;
 using namespace cv;
 
 #define THIRD 0.33
+#define MAT_HIST_NUM_ROWS 3
 #define MAT_NUM_COLS 128
+#define MAX_RANGE 256
 
 /*
  * inits new int mat[nRows][nCols] using malloc
@@ -63,7 +65,7 @@ int** spGetRGBHist(char* str, int nBins){
 	  int histSize = nBins;
 
 	  /// Set the ranges (for B,G,R))
-	  float range[] = {0, 256};
+	  float range[] = {0, MAX_RANGE};
 	  const float* histRange = {range};
 
 	  Mat b_hist, g_hist, r_hist;
@@ -74,11 +76,13 @@ int** spGetRGBHist(char* str, int nBins){
 	  calcHist(&bgr_planes[2], 1, 0, Mat(), r_hist, 1, &histSize, &histRange);
 
 	  //merging B G and R into res_mat
-	  int** res_mat = initIMat(3, nBins);
-	  if(res_mat == NULL) //malloc failed;
+	  int** res_mat = initIMat(MAT_HIST_NUM_ROWS, nBins);
+	  if(res_mat == NULL) //malloc failed
 		  return NULL;
 
+	  //adjust res_mat
 	  for(int j = 0; j < nBins; j++){
+		  //run on the j'th column
 		  res_mat[0][j] = b_hist.at<float>(0,j);
 		  res_mat[1][j] = g_hist.at<float>(0,j);
 		  res_mat[2][j] = r_hist.at<float>(0,j);
@@ -133,6 +137,8 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
 	Mat image;
 	if(str == NULL || nFeatures == NULL || maxNFeautres <= 0) //bad args
 		return NULL;
+
+	//adjust nFeatures
 	*nFeatures = (*nFeatures > maxNFeautres ? maxNFeautres : *nFeatures);
 
 	/// Load image
@@ -145,12 +151,13 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
 	if(res_mat == NULL) //malloc failed
 		return NULL;
 
-	//Calculate descriptors
+	//Detect descriptors
 	vector<KeyPoint> keypoints;
 	Ptr<BRISK> det_Brisk = BRISK::create();
 	det_Brisk->detect(image, keypoints);
 	delete det_Brisk;
 
+	//Compute descriptors
 	Ptr<BRISK> ext_Brisk = BRISK::create();
 	Mat descriptors;
 	ext_Brisk->compute(image, keypoints, descriptors);
@@ -176,7 +183,7 @@ double spL2SquaredDistance(double* featureA, double* featureB){
 	double dist = 0;
 	if(featureA == NULL || featureB == NULL)
 		return -1;
-	for(int j = 0; j < 128; j++){
+	for(int j = 0; j < MAT_NUM_COLS; j++){
 		dist = dist + (featureA[j] - featureB[j])*(featureA[j] - featureB[j]);
 	}
 	return dist;
