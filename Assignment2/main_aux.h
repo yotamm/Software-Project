@@ -20,4 +20,9 @@ char* concat(char *s1, char *s2);
  */
 int*** initIMat(int nRows, int nCols, int nDep);
 
+/*
+ * frees int mat[nRows][nCols][nDep] whom init by malloc
+ */
+void freeMat(int*** toFreeMat, int x, int y);
+
 #endif /* MAIN_AUX_H_ */

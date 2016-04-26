@@ -1,10 +1,11 @@
-#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/features2d.hpp>
 #include <iostream>
+#include <opencv2/highgui.hpp> //imshow, drawKeypoints, waitKey
+#include <opencv2/imgproc.hpp>
+#include <opencv2/core.hpp>//Mat
+#include <opencv2/xfeatures2d.hpp>//SiftDescriptorExtractor
+#include <opencv2/features2d.hpp>
+#include <vector>
 
 using namespace std;
 using namespace cv;
@@ -18,11 +19,21 @@ using namespace cv;
  * inits new int mat[nRows][nCols] using malloc
  */
 int** initIMat(int nRows, int nCols) {
-	//~~~tested and works~~~
 	int** theArray;
 	theArray = (int**) malloc(nRows*sizeof(int*));
-	for (int i = 0; i < nRows; i++)
+	if(theArray == NULL){
+		printf("An error occurred - allocation failure\n");
+		free_Mat((void**)theArray, 0);
+		return NULL;
+	}
+	for (int i = 0; i < nRows; i++){
 		theArray[i] = (int*) malloc(nCols*sizeof(int));
+		if(theArray[i] == NULL){
+			printf("An error occurred - allocation failure\n");
+			free_Mat((void**)theArray, i);
+			return NULL;
+		}
+	}
 	return theArray;
 }
 
@@ -30,12 +41,31 @@ int** initIMat(int nRows, int nCols) {
  * inits new double mat[nRows][nCols] using malloc
  */
 double** initDMat(int nRows, int nCols) {
-	//~~~tested and works~~~
 	double** theArray;
 	theArray = (double**) malloc(nRows*sizeof(double*));
-	for (int i = 0; i < nRows; i++)
+	if(theArray == NULL){
+		printf("An error occurred - allocation failure\n");
+		free_Mat((void**)theArray, 0);
+		return NULL;
+	}
+	for (int i = 0; i < nRows; i++){
 		theArray[i] = (double*) malloc(nCols*sizeof(double));
+		if(theArray[i] == NULL){
+			printf("An error occurred - allocation failure\n");
+			free_Mat((void**)theArray, i);
+			return NULL;
+		}
+	}
 	return theArray;
+}
+
+/*
+ * frees int mat[nRows][nCols] whom init by malloc
+ */
+void free_Mat(void** toFreeMat, int x) {
+	for (int i = 0; i < x; i++)
+			free(toFreeMat[i]);
+	free(toFreeMat);
 }
 
 /*
@@ -77,8 +107,9 @@ int** spGetRGBHist(char* str, int nBins){
 
 	  //merging B G and R into res_mat
 	  int** res_mat = initIMat(MAT_HIST_NUM_ROWS, nBins);
-	  if(res_mat == NULL) //malloc failed
+	  if(res_mat == NULL){ //malloc failed
 		  return NULL;
+	  }
 
 	  //adjust res_mat
 	  for(int j = 0; j < nBins; j++){
@@ -100,14 +131,14 @@ int** spGetRGBHist(char* str, int nBins){
  * @return -1 if nBins <= 0 or histA/histB is null, otherwise the average L@-squared distance.
  */
 double spRGBHistL2Distance(int** histA, int** histB, int nBins){
-	double avg_dist = 0;
+	double avg_dist = 0, temp;
 	if(nBins <= 0 || histA == NULL || histB == NULL)
 		return -1;
-	for(int j = 0; j < nBins; j++){
-		//calc on column j
-		avg_dist = avg_dist + ((histA[0][j] - histB[0][j])^2);
-		avg_dist = avg_dist + ((histA[1][j] - histB[1][j])^2);
-		avg_dist = avg_dist + ((histA[2][j] - histB[2][j])^2);
+	for(int i = 0; i < MAT_HIST_NUM_ROWS; i++){
+		for(int j = 0; j < nBins; j++){
+			temp = (double)(histA[i][j] - histB[i][j]);
+			avg_dist = avg_dist + (temp * temp);
+		}
 	}
 	return (THIRD*avg_dist);
 }
@@ -138,35 +169,33 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
 	if(str == NULL || nFeatures == NULL || maxNFeautres <= 0) //bad args
 		return NULL;
 
-	//adjust nFeatures
-	*nFeatures = (*nFeatures > maxNFeautres ? maxNFeautres : *nFeatures);
-
 	/// Load image
-	image = imread(str, CV_LOAD_IMAGE_COLOR);
+	image = imread(str, CV_LOAD_IMAGE_GRAYSCALE);
 	if(image.empty()) //image didnt open
 		return NULL;
 
 	//init res_mat
-	double** res_mat = initDMat(*nFeatures, MAT_NUM_COLS);
-	if(res_mat == NULL) //malloc failed
+	double** res_mat = initDMat(maxNFeautres, MAT_NUM_COLS);
+	if(res_mat == NULL){ //malloc failed
 		return NULL;
+	}
 
-	//Detect descriptors
-	vector<KeyPoint> keypoints;
-	Ptr<BRISK> det_Brisk = BRISK::create();
-	det_Brisk->detect(image, keypoints);
-	delete det_Brisk;
-
-	//Compute descriptors
-	Ptr<BRISK> ext_Brisk = BRISK::create();
-	Mat descriptors;
-	ext_Brisk->compute(image, keypoints, descriptors);
-	delete ext_Brisk;
+	//Key points will be stored in kp1;
+	vector<cv::KeyPoint> kp1;
+	//Feature values will be stored in ds1;
+	Mat ds1;
+	//Creating  a Sift Descriptor extractor
+	Ptr<xfeatures2d::SiftDescriptorExtractor> detect = xfeatures2d::SIFT::create(maxNFeautres);
+	//Extracting features
+	//The features will be stored in ds1
+	//The output type of ds1 is CV_32F (float)
+	detect->detect(image, kp1, Mat());
+	detect->compute(image, kp1, ds1);
 
 	//adjust res_mat
-	for(int i=0; i<*nFeatures; i++)
+	for(int i=0; i<maxNFeautres; i++)
 		for(int j=0; j< MAT_NUM_COLS; j++)
-			res_mat[i][j] = descriptors.at<double>(i,j);
+			res_mat[i][j] = ds1.at<double>(i,j);
 
 	return res_mat;
 }
@@ -180,11 +209,12 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
  * as given in the assignment instructions
  */
 double spL2SquaredDistance(double* featureA, double* featureB){
-	double dist = 0;
+	double dist = 0, temp;
 	if(featureA == NULL || featureB == NULL)
 		return -1;
 	for(int j = 0; j < MAT_NUM_COLS; j++){
-		dist = dist + (featureA[j] - featureB[j])*(featureA[j] - featureB[j]);
+		temp = (featureA[j] - featureB[j]);
+		dist = dist + (temp * temp);
 	}
 	return dist;
 }
