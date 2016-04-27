@@ -1,22 +1,16 @@
-#include <stdlib.h>
-#include <string.h>
-
+#include "main_aux.h"
 /*
- * function for concatinating two strings
- * for example :
- * if params are - "abc" and "lmn"
- * @return - "abclmn"
+ * frees int mat[nRows][xlen][ylen] whom init by malloc
  */
-char* concat(char *s1, char *s2)
-{
-    char* result = malloc(strlen(s1)+strlen(s2)+1);//+1 for the zero-terminator
-    if(result == NULL){ //malloc failed
-		printf("An error occurred - allocation failure\n");
-   		return NULL;
-    }
-    strcpy(result, s1);
-    strcat(result, s2);
-    return result;
+void freeMat(int*** data, int xlen, int ylen) {
+	for (int i=0; i < xlen; ++i){
+		if (data[i] != NULL){
+			for (int j=0; j < ylen; ++j)
+				free(data[i][j]);
+	        free(data[i]);
+	    }
+	}
+	free(data);
 }
 
 /*
@@ -42,12 +36,3 @@ int*** initIMat(int nRows, int nCols, int nDep) {
 	return theArray;
 }
 
-/*
- * frees int mat[nRows][nCols][nDep] whom init by malloc
- */
-void freeMat(int*** toFreeMat, int x, int y) {
-	for (int i = 0; i < x; i++)
-		for(int j=0; j < y; j++)
-			free(toFreeMat[i][j]);
-	free(toFreeMat);
-}

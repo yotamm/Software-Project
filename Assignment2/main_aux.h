@@ -1,28 +1,23 @@
-/*
- * main_aux.h
- *
- *  Created on: 25 באפר 2016
- *      Author: varda
- */
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <iostream>
 
 #ifndef MAIN_AUX_H_
 #define MAIN_AUX_H_
 
 /*
- * function for concatinating two strings
- * if param are - "abc" and "lmn"
- * @return - "abclmn"
- */
-char* concat(char *s1, char *s2);
-
-/*
  * inits new int mat[nRows][nCols][nDep] using malloc
+ * @param sizes of rows, cols, depth
+ * @return 3D mat[nRows][nCols][nDep]
  */
 int*** initIMat(int nRows, int nCols, int nDep);
 
 /*
- * frees int mat[nRows][nCols][nDep] whom init by malloc
+ * frees int mat[nRows][xlen][ylen] whom init by malloc
+ * @param 3D matrix to be freed, xlen and ylen blocking the indexes who been malloced
+ * @return void
  */
-void freeMat(int*** toFreeMat, int x, int y);
+void freeMat(int*** data, int xlen, int ylen);
 
 #endif /* MAIN_AUX_H_ */

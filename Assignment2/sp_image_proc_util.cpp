@@ -1,11 +1,4 @@
-#include <opencv2/imgcodecs.hpp>
-#include <iostream>
-#include <opencv2/highgui.hpp> //imshow, drawKeypoints, waitKey
-#include <opencv2/imgproc.hpp>
-#include <opencv2/core.hpp>//Mat
-#include <opencv2/xfeatures2d.hpp>//SiftDescriptorExtractor
-#include <opencv2/features2d.hpp>
-#include <vector>
+#include "sp_image_proc_util.h"
 
 using namespace std;
 using namespace cv;
@@ -14,6 +7,16 @@ using namespace cv;
 #define MAT_HIST_NUM_ROWS 3
 #define MAT_NUM_COLS 128
 #define MAX_RANGE 256
+
+
+/*
+ * frees int mat[nRows][nCols] whom init by malloc
+ */
+void free_Mat(void** toFreeMat, int x) {
+	for (int i = 0; i < x; i++)
+			free(toFreeMat[i]);
+	free(toFreeMat);
+}
 
 /*
  * inits new int mat[nRows][nCols] using malloc
@@ -59,14 +62,6 @@ double** initDMat(int nRows, int nCols) {
 	return theArray;
 }
 
-/*
- * frees int mat[nRows][nCols] whom init by malloc
- */
-void free_Mat(void** toFreeMat, int x) {
-	for (int i = 0; i < x; i++)
-			free(toFreeMat[i]);
-	free(toFreeMat);
-}
 
 /*
  * Calculates the RGB channels histogram. The histogram will be stored in a

@@ -1,3 +1,13 @@
+#include <opencv2/imgcodecs.hpp>
+#include <iostream>
+#include <opencv2/highgui.hpp> //imshow, drawKeypoints, waitKey
+#include <opencv2/imgproc.hpp>
+#include <opencv2/core.hpp>//Mat
+#include <opencv2/xfeatures2d.hpp>//SiftDescriptorExtractor
+#include <opencv2/features2d.hpp>
+#include <vector>
+#include <stdio.h>
+
 #ifndef SP_IMAGE_PROC_UTIL_H_
 #define SP_IMAGE_PROC_UTIL_H_
 

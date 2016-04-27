@@ -1,6 +1,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
+#include <stdio.h>
 #include "sp_image_proc_util.h"
 #include "main_aux.h"
 
@@ -11,25 +12,25 @@ using namespace std;
 
 int main() {
 	//init vars
-	char* dir, pref, temp, suff,img_url, temp1, temp2;
+	char s_num_imgs[1025], dir[1025], pref[1025], suff[1025], full_img_url[1025];
 	int num_imgs, num_bins, max_num_sift;
-	int*** histArray;
+	int*** histArray; //3D Matrix that will contain the images histograms
 
 	//stage 1
 	printf("Enter images directory path:\n");
 	fflush(NULL);
-	scanf("%s",&dir);
+	scanf("%s",dir);
 
 	//stage 2
 	printf("Enter images prefix:\n");
 	fflush(NULL);
-	scanf("%s",&pref);
+	scanf("%s",pref);
 
 	//stage 3
 	printf("Enter number of images:\n");
 	fflush(NULL);
-	scanf("%s",&temp);
-	num_imgs = atoi((char*)temp);
+	scanf("%s",s_num_imgs);
+	num_imgs = atoi(s_num_imgs);
 	if(num_imgs < 1){ //bad arg
 		printf("An error occurred - invalid number of images\n");
 		//nothing to free
@@ -39,7 +40,7 @@ int main() {
 	//stage 4
 	printf("Enter images suffix:\n");
 	fflush(NULL);
-	scanf("%s",&suff);
+	scanf("%s",suff);
 
 	//stage 5
 	printf("Enter number of bins:\n");
@@ -69,46 +70,18 @@ int main() {
 	}
 
 	//calculate histogram for each image
-	temp1 = concat((char*)dir, (char*)pref);
-	if(temp1 == NULL){
-		freeMat(histArray, num_imgs, THREE_FOR_RGB); //free histArray
-		free((char*)temp1);	//free malloc
-		return -1;
-	}
 	for (int i = 0; i < num_imgs; i++){
 		//concat the image full url
-		temp2 = concat((char*)i, (char*)suff);
-		if(temp2 == NULL){
-			freeMat(histArray, num_imgs, THREE_FOR_RGB); //free histArray
-			//free malloc
-			free((char*)temp1);
-			free((char*)temp2);
-			return -1;
-		}
-		img_url = concat((char*)temp1,(char*)temp2);
-		if(img_url == NULL){
-			freeMat(histArray, num_imgs, THREE_FOR_RGB); //free histArray
-			//free malloc
-			free((char*)temp1);
-			free((char*)temp2);
-			free((char*)img_url);
-			return -1;
-		}
+		sprintf(full_img_url, "%s%s%d%s", dir, pref, i, suff);
 
 		//calc hist for the i'th img
-		histArray[i] = spGetRGBHist((char*)img_url, num_bins);
-
-		//free malloc
-		free((char*)temp2);
-		free((char*)img_url);
+		histArray[i] = spGetRGBHist((char*)full_img_url, num_bins);
 
 		if(histArray[i] == NULL){  //wrong url or nBins <= 0 or malloc failed
 			freeMat(histArray, i, THREE_FOR_RGB); //free histArray
-			free((char*)temp1);	//free malloc
 			return -1;
 		}
 	}
-	free((char*)temp1);
 
 	return 0;
 }
