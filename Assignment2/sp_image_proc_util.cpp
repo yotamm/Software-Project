@@ -11,6 +11,8 @@ using namespace cv;
 
 /*
  * frees int mat[nRows][nCols] whom init by malloc
+ * @param matrix to free, x index of first cell we did not malloc
+ * @return void
  */
 void free_Mat(void** toFreeMat, int x) {
 	for (int i = 0; i < x; i++)
@@ -20,6 +22,8 @@ void free_Mat(void** toFreeMat, int x) {
 
 /*
  * inits new int mat[nRows][nCols] using malloc
+ * @param indexes of size of rows and cols
+ * @return int** with the sizes sent to func
  */
 int** initIMat(int nRows, int nCols) {
 	int** theArray;
@@ -42,6 +46,8 @@ int** initIMat(int nRows, int nCols) {
 
 /*
  * inits new double mat[nRows][nCols] using malloc
+ * @param indexes of size of rows and cols
+ * @return double** with the sizes sent to func
  */
 double** initDMat(int nRows, int nCols) {
 	double** theArray;
@@ -75,25 +81,20 @@ double** initDMat(int nRows, int nCols) {
  *  otherwise a two dimensional array representing the histogram.
  */
 int** spGetRGBHist(char* str, int nBins){
-	//~~~should work, almost all from ppt~~
-	  Mat src;
+	  Mat src, b_hist, g_hist, r_hist;
+	  vector<Mat> bgr_planes;
+	  float range[] = {0, MAX_RANGE}; // Set the ranges (for B,G,R))
+	  const float* histRange = {range};
+	  int histSize = nBins; // Establish the number of bins
+	  int** res_mat;
+
 	  /// Load image
 	  src = imread(str, CV_LOAD_IMAGE_COLOR);
 	  if(src.empty() || nBins <= 0)
 	     return NULL;
 
 	  /// Separate the image in 3 places (B, G and R)
-	  vector<Mat> bgr_planes;
 	  split(src, bgr_planes);
-
-	  /// Establish the number of bins
-	  int histSize = nBins;
-
-	  /// Set the ranges (for B,G,R))
-	  float range[] = {0, MAX_RANGE};
-	  const float* histRange = {range};
-
-	  Mat b_hist, g_hist, r_hist;
 
 	  /// Compute the histograms:
 	  calcHist(&bgr_planes[0], 1, 0, Mat(), b_hist, 1, &histSize, &histRange);
@@ -101,7 +102,7 @@ int** spGetRGBHist(char* str, int nBins){
 	  calcHist(&bgr_planes[2], 1, 0, Mat(), r_hist, 1, &histSize, &histRange);
 
 	  //merging B G and R into res_mat
-	  int** res_mat = initIMat(MAT_HIST_NUM_ROWS, nBins);
+	  res_mat = initIMat(MAT_HIST_NUM_ROWS, nBins);
 	  if(res_mat == NULL){ //malloc failed
 		  return NULL;
 	  }
@@ -127,6 +128,7 @@ int** spGetRGBHist(char* str, int nBins){
  */
 double spRGBHistL2Distance(int** histA, int** histB, int nBins){
 	double avg_dist = 0, temp;
+
 	if(nBins <= 0 || histA == NULL || histB == NULL)
 		return -1;
 	for(int i = 0; i < MAT_HIST_NUM_ROWS; i++){
@@ -158,9 +160,12 @@ double spRGBHistL2Distance(int** histA, int** histB, int nBins){
  * 		   nFeatures, and the actual features will be returned.
  */
 double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
-	//~~~tested and works~~~
-
+	double** res_mat;
 	Mat image;
+	vector<cv::KeyPoint> kp1; //Key points will be stored in kp1
+	Mat ds1; //Feature values will be stored in ds1
+	Ptr<xfeatures2d::SiftDescriptorExtractor> detect; //Creating  a Sift Descriptor extractor
+
 	if(str == NULL || nFeatures == NULL || maxNFeautres <= 0) //bad args
 		return NULL;
 
@@ -169,26 +174,23 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
 	if(image.empty()) //image didnt open
 		return NULL;
 
-	//init res_mat
-	double** res_mat = initDMat(maxNFeautres, MAT_NUM_COLS);
-	if(res_mat == NULL){ //malloc failed
-		return NULL;
-	}
 
-	//Key points will be stored in kp1;
-	vector<cv::KeyPoint> kp1;
-	//Feature values will be stored in ds1;
-	Mat ds1;
-	//Creating  a Sift Descriptor extractor
-	Ptr<xfeatures2d::SiftDescriptorExtractor> detect = xfeatures2d::SIFT::create(maxNFeautres);
+	detect = xfeatures2d::SIFT::create(maxNFeautres);
 	//Extracting features
 	//The features will be stored in ds1
 	//The output type of ds1 is CV_32F (float)
 	detect->detect(image, kp1, Mat());
 	detect->compute(image, kp1, ds1);
+	*nFeatures = &(ds1.size);
+
+	//init res_mat
+	res_mat = initDMat(*nFeatures, MAT_NUM_COLS);
+	if(res_mat == NULL){ //malloc failed
+		return NULL;
+	}
 
 	//adjust res_mat
-	for(int i=0; i<maxNFeautres; i++)
+	for(int i=0; i < *nFeatures; i++)
 		for(int j=0; j< MAT_NUM_COLS; j++)
 			res_mat[i][j] = ds1.at<double>(i,j);
 
