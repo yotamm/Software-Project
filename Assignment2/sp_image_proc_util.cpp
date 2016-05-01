@@ -14,7 +14,18 @@ using namespace cv;
  * @param matrix to free, x index of first cell we did not malloc
  * @return void
  */
-void free_Mat(void** toFreeMat, int x) {
+void free_int_Mat(int** toFreeMat, int x) {
+	for (int i = 0; i < x; i++)
+			free(toFreeMat[i]);
+	free(toFreeMat);
+}
+
+/*
+ * frees double mat[nRows][nCols] whom init by malloc
+ * @param matrix to free, x index of first cell we did not malloc
+ * @return void
+ */
+void free_double_Mat(double** toFreeMat, int x) {
 	for (int i = 0; i < x; i++)
 			free(toFreeMat[i]);
 	free(toFreeMat);
@@ -25,23 +36,26 @@ void free_Mat(void** toFreeMat, int x) {
  * @param indexes of size of rows and cols
  * @return int** with the sizes sent to func
  */
-int** initIMat(int nRows, int nCols) {
-	int** theArray;
-	theArray = (int**) malloc(nRows*sizeof(int*));
-	if(theArray == NULL){
-		printf("An error occurred - allocation failure\n");
-		free_Mat((void**)theArray, 0);
-		return NULL;
-	}
-	for (int i = 0; i < nRows; i++){
-		theArray[i] = (int*) malloc(nCols*sizeof(int));
-		if(theArray[i] == NULL){
-			printf("An error occurred - allocation failure\n");
-			free_Mat((void**)theArray, i);
-			return NULL;
-		}
-	}
-	return theArray;
+int** alloc_2D_int_mat(size_t xlen, size_t ylen)
+{
+    int **p;
+    size_t i;
+
+    if ((p = (int**)malloc(xlen * sizeof *p)) == NULL) {
+    	printf("An error occurred - allocation failure\n");
+        return NULL;
+    }
+
+    for (i=0; i < xlen; ++i)
+        p[i] = NULL;
+
+    for (i=0; i < xlen; ++i)
+        if ((p[i] = (int*)malloc(ylen * sizeof *p[i])) == NULL) {
+        	printf("An error occurred - allocation failure\n");
+        	free_int_Mat(p, xlen);
+            return NULL;
+        }
+    return p;
 }
 
 /*
@@ -49,23 +63,26 @@ int** initIMat(int nRows, int nCols) {
  * @param indexes of size of rows and cols
  * @return double** with the sizes sent to func
  */
-double** initDMat(int nRows, int nCols) {
-	double** theArray;
-	theArray = (double**) malloc(nRows*sizeof(double*));
-	if(theArray == NULL){
-		printf("An error occurred - allocation failure\n");
-		free_Mat((void**)theArray, 0);
-		return NULL;
-	}
-	for (int i = 0; i < nRows; i++){
-		theArray[i] = (double*) malloc(nCols*sizeof(double));
-		if(theArray[i] == NULL){
-			printf("An error occurred - allocation failure\n");
-			free_Mat((void**)theArray, i);
-			return NULL;
-		}
-	}
-	return theArray;
+double** alloc_2D_double_mat(size_t xlen, size_t ylen)
+{
+	double **p;
+    size_t i;
+
+    if ((p = (double**)malloc(xlen * sizeof *p)) == NULL) {
+    	printf("An error occurred - allocation failure\n");
+        return NULL;
+    }
+
+    for (i=0; i < xlen; ++i)
+        p[i] = NULL;
+
+    for (i=0; i < xlen; ++i)
+        if ((p[i] = (double*)malloc(ylen * sizeof *p[i])) == NULL) {
+        	printf("An error occurred - allocation failure\n");
+        	free_double_Mat(p, xlen);
+            return NULL;
+        }
+    return p;
 }
 
 
@@ -102,7 +119,7 @@ int** spGetRGBHist(char* str, int nBins){
 	  calcHist(&bgr_planes[2], 1, 0, Mat(), r_hist, 1, &histSize, &histRange);
 
 	  //merging B G and R into res_mat
-	  res_mat = initIMat(MAT_HIST_NUM_ROWS, nBins);
+	  res_mat = alloc_2D_int_mat(MAT_HIST_NUM_ROWS, nBins);
 	  if(res_mat == NULL){ //malloc failed
 		  return NULL;
 	  }
@@ -165,6 +182,7 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
 	vector<cv::KeyPoint> kp1; //Key points will be stored in kp1
 	Mat ds1; //Feature values will be stored in ds1
 	Ptr<xfeatures2d::SiftDescriptorExtractor> detect; //Creating  a Sift Descriptor extractor
+	Size s;
 
 	if(str == NULL || nFeatures == NULL || maxNFeautres <= 0) //bad args
 		return NULL;
@@ -174,17 +192,17 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
 	if(image.empty()) //image didnt open
 		return NULL;
 
-
 	detect = xfeatures2d::SIFT::create(maxNFeautres);
 	//Extracting features
 	//The features will be stored in ds1
 	//The output type of ds1 is CV_32F (float)
 	detect->detect(image, kp1, Mat());
 	detect->compute(image, kp1, ds1);
-	*nFeatures = &(ds1.size);
+	s = ds1.size();
+	*nFeatures = s.height; //update nFeatures to be the actual number of desc we took
 
 	//init res_mat
-	res_mat = initDMat(*nFeatures, MAT_NUM_COLS);
+	res_mat = alloc_2D_double_mat(*nFeatures, MAT_NUM_COLS);
 	if(res_mat == NULL){ //malloc failed
 		return NULL;
 	}
@@ -192,7 +210,7 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
 	//adjust res_mat
 	for(int i=0; i < *nFeatures; i++)
 		for(int j=0; j< MAT_NUM_COLS; j++)
-			res_mat[i][j] = ds1.at<double>(i,j);
+			res_mat[i][j] = ds1.at<float>(i,j);
 
 	return res_mat;
 }
@@ -210,7 +228,7 @@ double spL2SquaredDistance(double* featureA, double* featureB){
 	if(featureA == NULL || featureB == NULL)
 		return -1;
 	for(int j = 0; j < MAT_NUM_COLS; j++){
-		temp = (featureA[j] - featureB[j]);
+		temp = (double)(featureA[j] - featureB[j]);
 		dist = dist + (temp * temp);
 	}
 	return dist;
@@ -259,7 +277,10 @@ double spL2SquaredDistance(double* featureA, double* featureB){
  */
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 		double*** databaseFeatures, int numberOfImages,
-		int* nFeaturesPerImage);
+		int* nFeaturesPerImage){
+	//TODO: finish this function
+	return 0;
+}
 
 
 

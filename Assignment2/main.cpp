@@ -9,12 +9,15 @@ using namespace cv;
 using namespace std;
 
 #define THREE_FOR_RGB 3
+#define MAT_NUM_COLS 128
 
 int main() {
 	//init vars
 	char s_num_imgs[1025], dir[1025], pref[1025], suff[1025], full_img_url[1025];
-	int num_imgs, num_bins, max_num_sift;
+	int num_imgs = 0, num_bins = 0, max_num_sift = 0;
 	int*** histArray; //3D Matrix that will contain the images histograms
+	double*** descArray; ////3D Matrix that will contain the images descriptors
+	int* nFeatures;
 
 	//stage 1
 	printf("Enter images directory path:\n");
@@ -64,12 +67,19 @@ int main() {
 
 	//stage 7
 	//init RGB histogram for each image in the images directory
-	histArray = initIMat(num_imgs, THREE_FOR_RGB, num_bins);
+	histArray = alloc_3D_int_mat(num_imgs, THREE_FOR_RGB, num_bins);
 	if(histArray == NULL){ //malloc failed
 		 return -1;
 	}
 
-	//calculate histogram for each image
+	descArray = alloc_3D_double_mat(num_imgs, MAT_NUM_COLS, max_num_sift);
+	if(descArray == NULL){ //malloc failed
+		freeMat(histArray, 0, 0); //free histArray
+		return -1;
+	}
+
+	//calculate histogram and descriptors  for each image
+	nFeatures = (int*)malloc(sizeof nFeatures);
 	for (int i = 0; i < num_imgs; i++){
 		//concat the image full url
 		sprintf(full_img_url, "%s%s%d%s", dir, pref, i, suff);
@@ -77,8 +87,13 @@ int main() {
 		//calc hist for the i'th img
 		histArray[i] = spGetRGBHist((char*)full_img_url, num_bins);
 
-		if(histArray[i] == NULL){  //wrong url or nBins <= 0 or malloc failed
+		//calc desc for the i'th img
+		descArray[i] = spGetSiftDescriptors((char*)full_img_url, max_num_sift, nFeatures);
+
+		if(histArray[i] == NULL || descArray[i] == NULL){
+			//wrong url or nBins <= 0 or malloc failed
 			freeMat(histArray, i, THREE_FOR_RGB); //free histArray
+			freeDMat(descArray, i, (*nFeatures)); //free descArray
 			return -1;
 		}
 	}
