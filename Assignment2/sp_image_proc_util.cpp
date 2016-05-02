@@ -275,11 +275,52 @@ double spL2SquaredDistance(double* featureA, double* featureB){
  * 			   f2 is a SIFT descriptor of image i2 etc..)
  * 			 Then the array returned is {i1,i2,...,i_bestNFeatures}
  */
+struct indexedDist {
+		int index;
+		double dist;
+	};
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 		double*** databaseFeatures, int numberOfImages,
 		int* nFeaturesPerImage){
-	//TODO: finish this function
-	return 0;
+
+	struct indexedDist bestFeaturesDist[numberOfImages];
+	int result[bestNFeatures];
+	double min, current;
+	//Check for NULL
+	if (featureA==NULL || databaseFeatures==NULL || numberOfImages <= 1 || nFeaturesPerImage==NULL){
+		return NULL;
+	}
+	/*int* result;
+	if((result=(int*)malloc(sizeof bestNFeatures)) == NULL){
+		return NULL;
+	}*/
+
+	//find best matching features from each image
+	for (int i=0; i<numberOfImages; i++){
+		min=spL2SquaredDistance(databaseFeatures[i][0], featureA);
+		for (int j=1; j<nFeaturesPerImage[i]; j++){
+			current=spL2SquaredDistance(databaseFeatures[i][j], featureA);
+			if (current<min){
+				min=current;
+			}
+		}
+		bestFeaturesDist[i].dist=min;
+		bestFeaturesDist[i].index=i;
+	}
+
+	//sort the best features and fill the result array
+	qsort(bestFeaturesDist, sizeof(bestFeaturesDist), sizeof(struct indexedDist), &compareIndexed);
+	for (int k=0; k<bestNFeatures; k++){
+			result[k]=bestFeaturesDist[k].index;
+		}
+	return result;
+}
+
+int compareIndexed(const void * elem1, const void * elem2) {
+	indexedDist *i1, *i2;
+  i1 = (indexedDist*)elem1;
+  i2 = (indexedDist*)elem2;
+  return i1->dist - i2->dist;
 }
 
 
