@@ -17,12 +17,13 @@ void freeMat(int*** data, int xlen, int ylen) {
 }
 
 /*
- * frees mat[nRows][xlen][ylen] whom init by malloc
+ * frees mat[nRows][xlen][sizesArray[i]] whom init by malloc
+ * sizesArray[i] = nFeatures for the i'th image
  */
-void freeDMat(double*** data, int xlen, int ylen) {
+void freeDMat(double*** data, int xlen, int* sizesArray) {
 	for (int i=0; i < xlen; ++i){
 		if (data[i] != NULL){
-			for (int j=0; j < ylen; ++j){
+			for (int j=0; j < sizesArray[i]; ++j){
 				if(data[i][j] != NULL)
 					free(data[i][j]);
 			}
@@ -34,7 +35,7 @@ void freeDMat(double*** data, int xlen, int ylen) {
 
 /*
  * inits new int mat[xlen][ylen][zlen] using malloc
- */
+
 int*** alloc_3D_int_mat(size_t xlen, size_t ylen, size_t zlen)
 {
     int ***p;
@@ -69,10 +70,11 @@ int*** alloc_3D_int_mat(size_t xlen, size_t ylen, size_t zlen)
 
     return p;
 }
+*/
 
 /*
  * inits new double mat[xlen][ylen][zlen] using malloc
- */
+
 double*** alloc_3D_double_mat(size_t xlen, size_t ylen, size_t zlen)
 {
 	double*** p;
@@ -107,4 +109,4 @@ double*** alloc_3D_double_mat(size_t xlen, size_t ylen, size_t zlen)
 
     return p;
 }
-
+*/
