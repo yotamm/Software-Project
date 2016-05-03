@@ -14,7 +14,7 @@ using namespace std;
 int main() {
 	//init vars
 	char s_num_imgs[1025], dir[1025], pref[1025], suff[1025], full_img_url[1025];
-	int num_imgs = 0, num_bins = 0, max_num_sift = 0;
+	int num_imgs = 0, num_bins = 0, max_num_sift = 0, max_temp = -1;
 	int*** histArray; //3D Matrix that will contain the images histograms
 	double*** descArray; ////3D Matrix that will contain the images descriptors
 	int* nFeatures;
@@ -67,13 +67,17 @@ int main() {
 
 	//stage 7
 	//init RGB histogram for each image in the images directory
-	histArray = alloc_3D_int_mat(num_imgs, THREE_FOR_RGB, num_bins);
+	//histArray = alloc_3D_int_mat(num_imgs, THREE_FOR_RGB, num_bins);
+	histArray = (int***)malloc(num_imgs * sizeof *histArray);
 	if(histArray == NULL){ //malloc failed
-		 return -1;
+		printf("An error occurred - allocation failure\n");
+		return -1;
 	}
 
-	descArray = alloc_3D_double_mat(num_imgs, MAT_NUM_COLS, max_num_sift);
+	//descArray = alloc_3D_double_mat(num_imgs, MAT_NUM_COLS, max_num_sift);
+	descArray = (double***)malloc(num_imgs * sizeof *descArray);
 	if(descArray == NULL){ //malloc failed
+		printf("An error occurred - allocation failure\n");
 		freeMat(histArray, 0, 0); //free histArray
 		return -1;
 	}
@@ -90,13 +94,22 @@ int main() {
 		//calc desc for the i'th img
 		descArray[i] = spGetSiftDescriptors((char*)full_img_url, max_num_sift, nFeatures);
 
+		if(max_temp < *nFeatures){
+			//max_temp will be the max num of features we got from any img
+			//he will help us with freeing the 3D later on
+			max_temp = *nFeatures;
+		}
+
 		if(histArray[i] == NULL || descArray[i] == NULL){
 			//wrong url or nBins <= 0 or malloc failed
 			freeMat(histArray, i, THREE_FOR_RGB); //free histArray
-			freeDMat(descArray, i, (*nFeatures)); //free descArray
+			freeDMat(descArray, i, max_temp); //free descArray
+			free(nFeatures);
 			return -1;
 		}
 	}
+	free(nFeatures);
+
 
 	return 0;
 }

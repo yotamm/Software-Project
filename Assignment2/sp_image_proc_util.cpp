@@ -279,6 +279,14 @@ struct indexedDist {
 		int index;
 		double dist;
 	};
+
+int compareIndexed(const void * elem1, const void * elem2) {
+	indexedDist *i1, *i2;
+  i1 = (indexedDist*)elem1;
+  i2 = (indexedDist*)elem2;
+  return i1->dist - i2->dist;
+}
+
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 		double*** databaseFeatures, int numberOfImages,
 		int* nFeaturesPerImage){
@@ -314,13 +322,6 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 			result[k]=bestFeaturesDist[k].index;
 		}
 	return result;
-}
-
-int compareIndexed(const void * elem1, const void * elem2) {
-	indexedDist *i1, *i2;
-  i1 = (indexedDist*)elem1;
-  i2 = (indexedDist*)elem2;
-  return i1->dist - i2->dist;
 }
 
 

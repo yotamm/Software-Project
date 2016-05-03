@@ -6,8 +6,10 @@
 void freeMat(int*** data, int xlen, int ylen) {
 	for (int i=0; i < xlen; ++i){
 		if (data[i] != NULL){
-			for (int j=0; j < ylen; ++j)
-				free(data[i][j]);
+			for (int j=0; j < ylen; ++j){
+				if(data[i][j] != NULL)
+					free(data[i][j]);
+			}
 	        free(data[i]);
 	    }
 	}
@@ -20,8 +22,10 @@ void freeMat(int*** data, int xlen, int ylen) {
 void freeDMat(double*** data, int xlen, int ylen) {
 	for (int i=0; i < xlen; ++i){
 		if (data[i] != NULL){
-			for (int j=0; j < ylen; ++j)
-				free(data[i][j]);
+			for (int j=0; j < ylen; ++j){
+				if(data[i][j] != NULL)
+					free(data[i][j]);
+			}
 	        free(data[i]);
 	    }
 	}
