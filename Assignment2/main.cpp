@@ -102,12 +102,16 @@ int main() {
 			//wrong url or nBins <= 0 or malloc failed
 			freeMat(histArray, i, THREE_FOR_RGB); //free histArray
 			freeDMat(descArray, i, sizesArray); //free descArray
+			free(sizesArray);
 			free(nFeatures);
 			return -1;
 		}
 	}
-	free(nFeatures);
 
+	freeMat(histArray, num_imgs, THREE_FOR_RGB); //free histArray
+	freeDMat(descArray, num_imgs, sizesArray); //free descArray
+	free(sizesArray);
+	free(nFeatures);
 
 	return 0;
 }
