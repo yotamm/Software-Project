@@ -33,53 +33,24 @@ void freeDMat(double*** data, int xlen, int* sizesArray) {
 	free(data);
 }
 
-/**
- * a compare function for qsort()
- */
-int cmpfunc(const void * elem1, const void * elem2) {
-	struct indexedDist* x = (indexedDist*) elem1;
-		struct indexedDist* y = (indexedDist*) elem2;
-
-		if(x->val == y->val)
-			return (x->index - y->index);
-		return (((x->val - y->val) > 0) ? 1 : -1);
-}
+struct indexedDist{
+	int index;
+	double val;
+};
 
 /*
- * inits new int mat[xlen][ylen][zlen] using malloc
-
- int*** alloc_3D_int_mat(size_t xlen, size_t ylen, size_t zlen)
- {
- int ***p;
- size_t i, j;
-
- if ((p = (int***)malloc(xlen * sizeof *p)) == NULL) {
- printf("An error occurred - allocation failure\n");
- return NULL;
- }
-
- for (i=0; i < xlen; ++i)
- p[i] = NULL;
-
- for (i=0; i < xlen; ++i)
- if ((p[i] = (int**)malloc(ylen * sizeof *p[i])) == NULL) {
- printf("An error occurred - allocation failure\n");
- freeMat(p, xlen, ylen);
- return NULL;
- }
-
- for (i=0; i < xlen; ++i)
- for (j=0; j < ylen; ++j)
- p[i][j] = NULL;
-
- for (i=0; i < xlen; ++i)
- for (j=0; j < ylen; ++j)
- if ((p[i][j] = (int*)malloc(zlen * sizeof *p[i][j])) == NULL) {
- printf("An error occurred - allocation failure\n");
- freeMat(p, xlen, ylen);
- return NULL;
- }
-
- return p;
- }
+ * Note : cannot change sp_image_proc_util.h
+ *
+ * compares two indexedDist based on distance as primary
+ * and if dist is equal returns the one with
+ * lower index
  */
+int my_aux_comparator(const void * elem1, const void * elem2){
+	struct indexedDist* x = (indexedDist*) elem1;
+	struct indexedDist* y = (indexedDist*) elem2;
+
+	if(x->val == y->val)
+		return (x->index - y->index);
+	return (((x->val - y->val) > 0) ? 1 : -1);
+}
+

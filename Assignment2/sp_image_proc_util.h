@@ -124,18 +124,4 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
  */
 int* spBestRGBHistL2SquareDistance(int*** histArray, int numImages, int numBins, int** queryHist, int numBest);
 
-/**
- * struct whom contains index of and image
- * and it's calc dist
- */
-struct indexedDist {
-	int index;
-	double val;
-};
-
-void free_int_Mat(int** toFreeMat, int x);
-void free_double_Mat(double** toFreeMat, int x);
-
-
-
 #endif /* SP_IMAGE_PROC_UTIL_H_ */

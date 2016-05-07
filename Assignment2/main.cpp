@@ -165,7 +165,7 @@ int main() {
 				bestSIFTHits[k].val = bestSIFTHits[k].val + 1;
 			}
 		}
-		qsort(bestSIFTHits, num_imgs, sizeof(indexedDist), cmpfunc);
+		qsort(bestSIFTHits, num_imgs, sizeof(indexedDist), &my_aux_comparator);
 
 		//print results for current image
 		printf("Nearest images using global descriptors:\n");

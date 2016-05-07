@@ -21,9 +21,13 @@ void freeMat(int*** data, int xlen, int ylen);
  */
 void freeDMat(double*** data, int xlen, int* sizesArray);
 
-/**
- * a compare function for qsort()
+/*
+ * Note : cannot change sp_image_proc_util.h
+ *
+ * compares two indexedDist based on distance as primary
+ * and if dist is equal returns the one with
+ * lower index
  */
-int cmpfunc(const void * a, const void * b);
+int my_aux_comparator(const void * elem1, const void * elem2);
 
 #endif /* MAIN_AUX_H_ */

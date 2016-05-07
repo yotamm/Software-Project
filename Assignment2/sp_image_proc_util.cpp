@@ -230,12 +230,15 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 	return dist;
 }
 
-/*int compareIndexed(const void * elem1, const void * elem2) {
-	indexedDist *i1, *i2;
-	i1 = (indexedDist*) elem1;
-	i2 = (indexedDist*) elem2;
-	return i1->val - i2->val;
-}*/
+
+/**
+ * struct whom contains index of and image
+ * and it's calc dist
+ */
+struct indexedDist {
+	int index;
+	double val;
+};
 
 /*
  * compares two indexedDist based on distance as primary
