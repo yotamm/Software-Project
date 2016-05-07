@@ -230,6 +230,36 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 	return dist;
 }
 
+/*
+ * struct whom contains index of and image
+ * and it's calc dist
+ */
+struct indexedDist {
+	int index;
+	double dist;
+};
+
+int compareIndexed(const void * elem1, const void * elem2) {
+	indexedDist *i1, *i2;
+	i1 = (indexedDist*) elem1;
+	i2 = (indexedDist*) elem2;
+	return i1->dist - i2->dist;
+}
+
+/*
+ * compares two indexedDist based on distance as primary
+ * and if dist is equal returns the one with
+ * lower index
+ */
+int my_comparator(const void * elem1, const void * elem2){
+	struct indexedDist* x = (indexedDist*) elem1;
+	struct indexedDist* y = (indexedDist*) elem2;
+
+	if(x->dist == y->dist)
+		return (x->index - y->index);
+	return (((x->dist - y->dist) > 0) ? 1 : -1);
+}
+
 /**
  * Given sift descriptors of the images in the database (databaseFeatures), finds the
  * closest bestNFeatures to a given SIFT feature (featureA). The function returns the
@@ -271,17 +301,6 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
  * 			   f2 is a SIFT descriptor of image i2 etc..)
  * 			 Then the array returned is {i1,i2,...,i_bestNFeatures}
  */
-struct indexedDist {
-	int index;
-	double dist;
-};
-
-int compareIndexed(const void * elem1, const void * elem2) {
-	indexedDist *i1, *i2;
-	i1 = (indexedDist*) elem1;
-	i2 = (indexedDist*) elem2;
-	return i1->dist - i2->dist;
-}
 
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 		double*** databaseFeatures, int numberOfImages,
@@ -355,7 +374,7 @@ int* spBestRGBHistL2SquareDistance(int*** histArray, int numImages, int numBins,
 	}
 
 	//sort the best features and fill the result array
-	qsort(bestHistDist, numImages, sizeof(struct indexedDist), &compareIndexed);
+	qsort(bestHistDist, numImages, sizeof(struct indexedDist), &my_comparator);
 	for (int k = 0; k < numBest; k++) {
 		result[k] = bestHistDist[k].index;
 	}
