@@ -5,7 +5,7 @@ using namespace cv;
 
 #define THIRD 0.33
 #define MAT_HIST_NUM_ROWS 3
-#define MAT_NUM_COLS 128
+#define SIFT_MAT_NUM_COLS 128
 #define MAX_RANGE 256
 
 /*
@@ -198,14 +198,14 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 	*nFeatures = s.height; //update nFeatures to be the actual number of desc we took
 
 	//init res_mat
-	res_mat = alloc_2D_double_mat(*nFeatures, MAT_NUM_COLS);
+	res_mat = alloc_2D_double_mat(*nFeatures, SIFT_MAT_NUM_COLS);
 	if (res_mat == NULL) { //malloc failed
 		return NULL;
 	}
 
 	//adjust res_mat
 	for (int i = 0; i < *nFeatures; i++)
-		for (int j = 0; j < MAT_NUM_COLS; j++)
+		for (int j = 0; j < SIFT_MAT_NUM_COLS; j++)
 			res_mat[i][j] = ds1.at<float>(i, j);
 
 	return res_mat;
@@ -223,7 +223,7 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 	double dist = 0, temp;
 	if (featureA == NULL || featureB == NULL)
 		return -1;
-	for (int j = 0; j < MAT_NUM_COLS; j++) {
+	for (int j = 0; j < SIFT_MAT_NUM_COLS; j++) {
 		temp = (double) (featureA[j] - featureB[j]);
 		dist = dist + (temp * temp);
 	}

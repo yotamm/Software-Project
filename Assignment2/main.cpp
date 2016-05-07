@@ -15,7 +15,7 @@ using namespace std;
 int main() {
 	//init vars
 	char s_num_imgs[1025], dir[1025], pref[1025], suff[1025],
-			full_img_url[1025], exit_continue[1025];
+			full_img_url[1025], query_url[1025];
 	int num_imgs = 0, num_bins = 0, max_num_sift = 0;
 	int*** histArray; //3D Matrix that will contain the images histograms
 	double*** descArray; ////3D Matrix that will contain the images descriptors
@@ -135,8 +135,8 @@ int main() {
 
 		printf("Enter a query image or # to terminate:\n");
 		fflush(NULL);
-		scanf("%s", exit_continue);
-		if (exit_continue[0] == '#') {
+		scanf("%s", query_url);
+		if (query_url[0] == '#') {
 			//need to terminate
 			printf("Exiting...\n");
 			freeMat(histArray, num_imgs, THREE_FOR_RGB); //free histArray
@@ -148,10 +148,10 @@ int main() {
 		}
 
 		//calculate best SIFT hits and RGB hits
-		queryHist = spGetRGBHist(exit_continue, num_bins);
+		queryHist = spGetRGBHist(query_url, num_bins);
 		closestHist = spBestRGBHistL2SquareDistance(histArray, num_imgs,
 				num_bins, queryHist, FIVE);
-		querySIFT = spGetSiftDescriptors(exit_continue, max_num_sift,
+		querySIFT = spGetSiftDescriptors(query_url, max_num_sift,
 				nFeatures);
 		for (int i = 0; i < max_num_sift; i++) {
 			closestSIFT = spBestSIFTL2SquaredDistance(FIVE, querySIFT[i],
