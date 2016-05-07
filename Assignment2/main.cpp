@@ -162,11 +162,14 @@ int main() {
 					descArray, num_imgs, sizesArray);
 			for (int j = 0; j < FIVE; j++) {
 				k = closestSIFT[j];
-				bestSIFTHits[k].val = bestSIFTHits[k].val + 1;
+				bestSIFTHits[k].val++;
 			}
 		}
 		qsort(bestSIFTHits, num_imgs, sizeof(indexedDist), &my_aux_comparator);
-
+		for(int i=0; i<num_imgs; i++){
+			printf(">>> value = %f, index = %d\n", bestSIFTHits[i].val, bestSIFTHits[i].index);
+			fflush(NULL);
+		}
 		//print results for current image
 		printf("Nearest images using global descriptors:\n");
 		printf("%d, %d, %d, %d, %d\n", closestHist[0], closestHist[1],

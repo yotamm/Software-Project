@@ -46,7 +46,7 @@ int my_aux_comparator(const void * elem1, const void * elem2){
 
 	if(x->val == y->val)
 		return (x->index - y->index);
-	return (((x->val - y->val) > 0) ? 1 : -1);
+	return (((x->val - y->val) > 0) ? -1 : 1);
 }
 
 /*
