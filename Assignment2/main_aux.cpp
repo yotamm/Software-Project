@@ -36,8 +36,13 @@ void freeDMat(double*** data, int xlen, int* sizesArray) {
 /**
  * a compare function for qsort()
  */
-int cmpfunc(const void * a, const void * b) {
-	return (*(int*) b - *(int*) a);
+int cmpfunc(const void * elem1, const void * elem2) {
+	struct indexedDist* x = (indexedDist*) elem1;
+		struct indexedDist* y = (indexedDist*) elem2;
+
+		if(x->val == y->val)
+			return (x->index - y->index);
+		return (((x->val - y->val) > 0) ? 1 : -1);
 }
 
 /*

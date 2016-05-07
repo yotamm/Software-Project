@@ -165,7 +165,7 @@ int main() {
 				bestSIFTHits[k].val = bestSIFTHits[k].val + 1;
 			}
 		}
-		qsort(bestSIFTHits, num_imgs, sizeof(int), cmpfunc);
+		qsort(bestSIFTHits, num_imgs, sizeof(indexedDist), cmpfunc);
 
 		//print results for current image
 		printf("Nearest images using global descriptors:\n");
@@ -175,9 +175,10 @@ int main() {
 		printf("%d, %d, %d, %d, %d\n", bestSIFTHits[0].index, bestSIFTHits[1].index,
 				bestSIFTHits[2].index, bestSIFTHits[3].index, bestSIFTHits[4].index);
 
+		//free alloc for the current query
 		free(closestHist);
-		free_int_Mat(queryHist, THREE_FOR_RGB);
-		free_double_Mat(querySIFT, THREE_FOR_RGB);
+		free_int_Mat(queryHist, THREE_FOR_RGB); //free queryHist
+		free_double_Mat(querySIFT, THREE_FOR_RGB); //free querySIFT
 	}
 
 	//not needed
