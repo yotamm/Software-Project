@@ -177,8 +177,8 @@ int main() {
 
 		//free alloc for the current query
 		free(closestHist);
-		free_int_Mat(queryHist, THREE_FOR_RGB); //free queryHist
-		free_double_Mat(querySIFT, THREE_FOR_RGB); //free querySIFT
+		free_2Dint_Mat(queryHist, THREE_FOR_RGB); //free queryHist
+		free_2Ddouble_Mat(querySIFT, THREE_FOR_RGB); //free querySIFT
 	}
 
 	//not needed

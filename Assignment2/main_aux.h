@@ -29,5 +29,13 @@ void freeDMat(double*** data, int xlen, int* sizesArray);
  * lower index
  */
 int my_aux_comparator(const void * elem1, const void * elem2);
+//TODO
+struct indexedDist{
+	int index;
+	double val;
+};
+
+void free_2Dint_Mat(int** toFreeMat, int x);
+void free_2Ddouble_Mat(double** toFreeMat, int x);
 
 #endif /* MAIN_AUX_H_ */

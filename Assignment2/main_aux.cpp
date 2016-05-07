@@ -33,11 +33,6 @@ void freeDMat(double*** data, int xlen, int* sizesArray) {
 	free(data);
 }
 
-struct indexedDist{
-	int index;
-	double val;
-};
-
 /*
  * Note : cannot change sp_image_proc_util.h
  *
@@ -52,5 +47,27 @@ int my_aux_comparator(const void * elem1, const void * elem2){
 	if(x->val == y->val)
 		return (x->index - y->index);
 	return (((x->val - y->val) > 0) ? 1 : -1);
+}
+
+/*
+ * frees int mat[nRows][nCols] whom init by malloc
+ * @param matrix to free, x index of first cell we did not malloc
+ * @return void
+ */
+void free_2Dint_Mat(int** toFreeMat, int x) {
+	for (int i = 0; i < x; i++)
+		free(toFreeMat[i]);
+	free(toFreeMat);
+}
+
+/*
+ * frees double mat[nRows][nCols] whom init by malloc
+ * @param matrix to free, x index of first cell we did not malloc
+ * @return void
+ */
+void free_2Ddouble_Mat(double** toFreeMat, int x) {
+	for (int i = 0; i < x; i++)
+		free(toFreeMat[i]);
+	free(toFreeMat);
 }
 
