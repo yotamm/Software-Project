@@ -6,7 +6,6 @@
 #ifndef MAIN_AUX_H_
 #define MAIN_AUX_H_
 
-
 /*
  * frees int mat[nRows][xlen][ylen] whom init by malloc
  * @param 3D matrix to be freed, xlen and ylen blocking the indexes who been malloced
@@ -25,14 +24,6 @@ void freeDMat(double*** data, int xlen, int* sizesArray);
 /**
  * a compare function for qsort()
  */
-int cmpfunc (const void * a, const void * b);
-
-/*
- * inits new double mat[xlen][ylen][zlen] using malloc
- * @param sizes of rows, cols, depth
- * @return 3D mat[xlen][ylen][zlen]
- */
-//double*** alloc_3D_double_mat(size_t xlen, size_t ylen, size_t zlen);
-
+int cmpfunc(const void * a, const void * b);
 
 #endif /* MAIN_AUX_H_ */

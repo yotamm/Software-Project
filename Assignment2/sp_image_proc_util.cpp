@@ -8,7 +8,6 @@ using namespace cv;
 #define MAT_NUM_COLS 128
 #define MAX_RANGE 256
 
-
 /*
  * frees int mat[nRows][nCols] whom init by malloc
  * @param matrix to free, x index of first cell we did not malloc
@@ -16,7 +15,7 @@ using namespace cv;
  */
 void free_int_Mat(int** toFreeMat, int x) {
 	for (int i = 0; i < x; i++)
-			free(toFreeMat[i]);
+		free(toFreeMat[i]);
 	free(toFreeMat);
 }
 
@@ -27,7 +26,7 @@ void free_int_Mat(int** toFreeMat, int x) {
  */
 void free_double_Mat(double** toFreeMat, int x) {
 	for (int i = 0; i < x; i++)
-			free(toFreeMat[i]);
+		free(toFreeMat[i]);
 	free(toFreeMat);
 }
 
@@ -36,26 +35,25 @@ void free_double_Mat(double** toFreeMat, int x) {
  * @param indexes of size of rows and cols
  * @return int** with the sizes sent to func
  */
-int** alloc_2D_int_mat(size_t xlen, size_t ylen)
-{
-    int **p;
-    size_t i;
+int** alloc_2D_int_mat(size_t xlen, size_t ylen) {
+	int **p;
+	size_t i;
 
-    if ((p = (int**)malloc(xlen * sizeof *p)) == NULL) {
-    	printf("An error occurred - allocation failure\n");
-        return NULL;
-    }
+	if ((p = (int**) malloc(xlen * sizeof *p)) == NULL) {
+		printf("An error occurred - allocation failure\n");
+		return NULL;
+	}
 
-    for (i=0; i < xlen; ++i)
-        p[i] = NULL;
+	for (i = 0; i < xlen; ++i)
+		p[i] = NULL;
 
-    for (i=0; i < xlen; ++i)
-        if ((p[i] = (int*)malloc(ylen * sizeof *p[i])) == NULL) {
-        	printf("An error occurred - allocation failure\n");
-        	free_int_Mat(p, xlen);
-            return NULL;
-        }
-    return p;
+	for (i = 0; i < xlen; ++i)
+		if ((p[i] = (int*) malloc(ylen * sizeof *p[i])) == NULL) {
+			printf("An error occurred - allocation failure\n");
+			free_int_Mat(p, xlen);
+			return NULL;
+		}
+	return p;
 }
 
 /*
@@ -63,28 +61,26 @@ int** alloc_2D_int_mat(size_t xlen, size_t ylen)
  * @param indexes of size of rows and cols
  * @return double** with the sizes sent to func
  */
-double** alloc_2D_double_mat(size_t xlen, size_t ylen)
-{
+double** alloc_2D_double_mat(size_t xlen, size_t ylen) {
 	double **p;
-    size_t i;
+	size_t i;
 
-    if ((p = (double**)malloc(xlen * sizeof *p)) == NULL) {
-    	printf("An error occurred - allocation failure\n");
-        return NULL;
-    }
+	if ((p = (double**) malloc(xlen * sizeof *p)) == NULL) {
+		printf("An error occurred - allocation failure\n");
+		return NULL;
+	}
 
-    for (i=0; i < xlen; ++i)
-        p[i] = NULL;
+	for (i = 0; i < xlen; ++i)
+		p[i] = NULL;
 
-    for (i=0; i < xlen; ++i)
-        if ((p[i] = (double*)malloc(ylen * sizeof *p[i])) == NULL) {
-        	printf("An error occurred - allocation failure\n");
-        	free_double_Mat(p, xlen);
-            return NULL;
-        }
-    return p;
+	for (i = 0; i < xlen; ++i)
+		if ((p[i] = (double*) malloc(ylen * sizeof *p[i])) == NULL) {
+			printf("An error occurred - allocation failure\n");
+			free_double_Mat(p, xlen);
+			return NULL;
+		}
+	return p;
 }
-
 
 /*
  * Calculates the RGB channels histogram. The histogram will be stored in a
@@ -97,42 +93,42 @@ double** alloc_2D_double_mat(size_t xlen, size_t ylen)
  * @return NULL if str is NULL or nBins <= 0 or allocation error occurred,
  *  otherwise a two dimensional array representing the histogram.
  */
-int** spGetRGBHist(char* str, int nBins){
-	  Mat src, b_hist, g_hist, r_hist;
-	  vector<Mat> bgr_planes;
-	  float range[] = {0, MAX_RANGE}; // Set the ranges (for B,G,R))
-	  const float* histRange = {range};
-	  int histSize = nBins; // Establish the number of bins
-	  int** res_mat;
+int** spGetRGBHist(char* str, int nBins) {
+	Mat src, b_hist, g_hist, r_hist;
+	vector<Mat> bgr_planes;
+	float range[] = { 0, MAX_RANGE }; // Set the ranges (for B,G,R))
+	const float* histRange = { range };
+	int histSize = nBins; // Establish the number of bins
+	int** res_mat;
 
-	  /// Load image
-	  src = imread(str, CV_LOAD_IMAGE_COLOR);
-	  if(src.empty() || nBins <= 0)
-	     return NULL;
+	/// Load image
+	src = imread(str, CV_LOAD_IMAGE_COLOR);
+	if (src.empty() || nBins <= 0)
+		return NULL;
 
-	  /// Separate the image in 3 places (B, G and R)
-	  split(src, bgr_planes);
+	/// Separate the image in 3 places (B, G and R)
+	split(src, bgr_planes);
 
-	  /// Compute the histograms:
-	  calcHist(&bgr_planes[0], 1, 0, Mat(), b_hist, 1, &histSize, &histRange);
-	  calcHist(&bgr_planes[1], 1, 0, Mat(), g_hist, 1, &histSize, &histRange);
-	  calcHist(&bgr_planes[2], 1, 0, Mat(), r_hist, 1, &histSize, &histRange);
+	/// Compute the histograms:
+	calcHist(&bgr_planes[0], 1, 0, Mat(), b_hist, 1, &histSize, &histRange);
+	calcHist(&bgr_planes[1], 1, 0, Mat(), g_hist, 1, &histSize, &histRange);
+	calcHist(&bgr_planes[2], 1, 0, Mat(), r_hist, 1, &histSize, &histRange);
 
-	  //merging B G and R into res_mat
-	  res_mat = alloc_2D_int_mat(MAT_HIST_NUM_ROWS, nBins);
-	  if(res_mat == NULL){ //malloc failed
-		  return NULL;
-	  }
+	//merging B G and R into res_mat
+	res_mat = alloc_2D_int_mat(MAT_HIST_NUM_ROWS, nBins);
+	if (res_mat == NULL) { //malloc failed
+		return NULL;
+	}
 
-	  //adjust res_mat
-	  for(int j = 0; j < nBins; j++){
-		  //run on the j'th column
-		  res_mat[0][j] = b_hist.at<float>(0,j);
-		  res_mat[1][j] = g_hist.at<float>(0,j);
-		  res_mat[2][j] = r_hist.at<float>(0,j);
-	  }
+	//adjust res_mat
+	for (int j = 0; j < nBins; j++) {
+		//run on the j'th column
+		res_mat[0][j] = b_hist.at<float>(0, j);
+		res_mat[1][j] = g_hist.at<float>(0, j);
+		res_mat[2][j] = r_hist.at<float>(0, j);
+	}
 
-	  return res_mat;
+	return res_mat;
 }
 
 /**
@@ -143,18 +139,18 @@ int** spGetRGBHist(char* str, int nBins){
  * @param histB - RGB histogram of image B
  * @return -1 if nBins <= 0 or histA/histB is null, otherwise the average L@-squared distance.
  */
-double spRGBHistL2Distance(int** histA, int** histB, int nBins){
+double spRGBHistL2Distance(int** histA, int** histB, int nBins) {
 	double avg_dist = 0, temp;
 
-	if(nBins <= 0 || histA == NULL || histB == NULL)
+	if (nBins <= 0 || histA == NULL || histB == NULL)
 		return -1;
-	for(int i = 0; i < MAT_HIST_NUM_ROWS; i++){
-		for(int j = 0; j < nBins; j++){
-			temp = (double)(histA[i][j] - histB[i][j]);
+	for (int i = 0; i < MAT_HIST_NUM_ROWS; i++) {
+		for (int j = 0; j < nBins; j++) {
+			temp = (double) (histA[i][j] - histB[i][j]);
 			avg_dist = avg_dist + (temp * temp);
 		}
 	}
-	return (THIRD*avg_dist);
+	return (THIRD * avg_dist);
 }
 
 /**
@@ -176,7 +172,7 @@ double spRGBHistL2Distance(int** histA, int** histB, int nBins){
  * 		   otherwise, the total number of features retained will be stored in
  * 		   nFeatures, and the actual features will be returned.
  */
-double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
+double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 	double** res_mat;
 	Mat image;
 	vector<cv::KeyPoint> kp1; //Key points will be stored in kp1
@@ -184,12 +180,12 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
 	Ptr<xfeatures2d::SiftDescriptorExtractor> detect; //Creating  a Sift Descriptor extractor
 	Size s;
 
-	if(str == NULL || nFeatures == NULL || maxNFeautres <= 0) //bad args
+	if (str == NULL || nFeatures == NULL || maxNFeautres <= 0) //bad args
 		return NULL;
 
 	/// Load image
 	image = imread(str, CV_LOAD_IMAGE_GRAYSCALE);
-	if(image.empty()) //image didnt open
+	if (image.empty()) //image didnt open
 		return NULL;
 
 	detect = xfeatures2d::SIFT::create(maxNFeautres);
@@ -203,14 +199,14 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
 
 	//init res_mat
 	res_mat = alloc_2D_double_mat(*nFeatures, MAT_NUM_COLS);
-	if(res_mat == NULL){ //malloc failed
+	if (res_mat == NULL) { //malloc failed
 		return NULL;
 	}
 
 	//adjust res_mat
-	for(int i=0; i < *nFeatures; i++)
-		for(int j=0; j< MAT_NUM_COLS; j++)
-			res_mat[i][j] = ds1.at<float>(i,j);
+	for (int i = 0; i < *nFeatures; i++)
+		for (int j = 0; j < MAT_NUM_COLS; j++)
+			res_mat[i][j] = ds1.at<float>(i, j);
 
 	return res_mat;
 }
@@ -223,12 +219,12 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures){
  * @return -1 in case featureA or featureB is NULL, otherwise the L2-Squared distance
  * as given in the assignment instructions
  */
-double spL2SquaredDistance(double* featureA, double* featureB){
+double spL2SquaredDistance(double* featureA, double* featureB) {
 	double dist = 0, temp;
-	if(featureA == NULL || featureB == NULL)
+	if (featureA == NULL || featureB == NULL)
 		return -1;
-	for(int j = 0; j < MAT_NUM_COLS; j++){
-		temp = (double)(featureA[j] - featureB[j]);
+	for (int j = 0; j < MAT_NUM_COLS; j++) {
+		temp = (double) (featureA[j] - featureB[j]);
 		dist = dist + (temp * temp);
 	}
 	return dist;
@@ -276,48 +272,50 @@ double spL2SquaredDistance(double* featureA, double* featureB){
  * 			 Then the array returned is {i1,i2,...,i_bestNFeatures}
  */
 struct indexedDist {
-		int index;
-		double dist;
-	};
+	int index;
+	double dist;
+};
 
 int compareIndexed(const void * elem1, const void * elem2) {
 	indexedDist *i1, *i2;
-  i1 = (indexedDist*)elem1;
-  i2 = (indexedDist*)elem2;
-  return i1->dist - i2->dist;
+	i1 = (indexedDist*) elem1;
+	i2 = (indexedDist*) elem2;
+	return i1->dist - i2->dist;
 }
 
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 		double*** databaseFeatures, int numberOfImages,
-		int* nFeaturesPerImage){
+		int* nFeaturesPerImage) {
 	struct indexedDist bestFeaturesDist[numberOfImages];
 	double min, current;
 	int* result;
-	if ((result = (int*)malloc(bestNFeatures * sizeof(int))) == NULL){
+	if ((result = (int*) malloc(bestNFeatures * sizeof(int))) == NULL) {
 		printf("An error occurred - allocation failure\n");
 		return NULL;
 	}
 	//Check for NULL
-	if (featureA==NULL || databaseFeatures==NULL || numberOfImages <= 1 || nFeaturesPerImage==NULL){
+	if (featureA == NULL || databaseFeatures == NULL
+			|| numberOfImages <= 1|| nFeaturesPerImage==NULL) {
 		return NULL;
 	}
 	//find best matching features from each image
-	for (int i=0; i<numberOfImages; i++){
-		min=spL2SquaredDistance(databaseFeatures[i][0], featureA);
-		for (int j=1; j<nFeaturesPerImage[i]; j++){
-			current=spL2SquaredDistance(databaseFeatures[i][j], featureA);
-			if (current<min){
-				min=current;
+	for (int i = 0; i < numberOfImages; i++) {
+		min = spL2SquaredDistance(databaseFeatures[i][0], featureA);
+		for (int j = 1; j < nFeaturesPerImage[i]; j++) {
+			current = spL2SquaredDistance(databaseFeatures[i][j], featureA);
+			if (current < min) {
+				min = current;
 			}
 		}
-		bestFeaturesDist[i].dist=min;
-		bestFeaturesDist[i].index=i;
+		bestFeaturesDist[i].dist = min;
+		bestFeaturesDist[i].index = i;
 	}
 	//sort the best features and fill the result array
-	qsort(bestFeaturesDist, numberOfImages, sizeof(struct indexedDist), &compareIndexed);
-	for (int k=0; k<bestNFeatures; k++){
-			result[k]=bestFeaturesDist[k].index;
-		}
+	qsort(bestFeaturesDist, numberOfImages, sizeof(struct indexedDist),
+			&compareIndexed);
+	for (int k = 0; k < bestNFeatures; k++) {
+		result[k] = bestFeaturesDist[k].index;
+	}
 	return result;
 }
 
@@ -332,34 +330,35 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
  * @param numBest   - number of closest images to return
  * @return          - the indices of the numBest closest L2Sqaure images from histArray
  */
-int* spBestRGBHistL2SquareDistance(int*** histArray, int numImages, int numBins, int** queryHist, int numBest){
-		struct indexedDist bestHistDist[numImages];
-		//double min, current;
-		int* result;
+int* spBestRGBHistL2SquareDistance(int*** histArray, int numImages, int numBins,
+		int** queryHist, int numBest) {
+	struct indexedDist bestHistDist[numImages];
+	//double min, current;
+	int* result;
 
-		if ((result = (int*)malloc(numBest * sizeof(int))) == NULL){
-			printf("An error occurred - allocation failure\n");
-			return NULL;
-		}
+	if ((result = (int*) malloc(numBest * sizeof(int))) == NULL) {
+		printf("An error occurred - allocation failure\n");
+		return NULL;
+	}
 
-		//Check for NULL and bad args
-		if (queryHist == NULL || histArray == NULL || numImages <= 1 || numBins <= 0 || numBest < 1){
-			return NULL;
-		}
+	//Check for NULL and bad args
+	if (queryHist == NULL || histArray == NULL || numImages <= 1 || numBins <= 0
+			|| numBest < 1) {
+		return NULL;
+	}
 
-		//calculate
-		for (int i=0; i<numImages; i++){
-			bestHistDist[i].dist=spRGBHistL2Distance(histArray[i], queryHist, numBins);
-			bestHistDist[i].index=i;
-		}
+	//calculate
+	for (int i = 0; i < numImages; i++) {
+		bestHistDist[i].dist = spRGBHistL2Distance(histArray[i], queryHist,
+				numBins);
+		bestHistDist[i].index = i;
+	}
 
-		//sort the best features and fill the result array
-		qsort(bestHistDist, numImages, sizeof(struct indexedDist), &compareIndexed);
-		for (int k=0; k<numBest; k++){
-			result[k]=bestHistDist[k].index;
-		}
-		return result;
+	//sort the best features and fill the result array
+	qsort(bestHistDist, numImages, sizeof(struct indexedDist), &compareIndexed);
+	for (int k = 0; k < numBest; k++) {
+		result[k] = bestHistDist[k].index;
+	}
+	return result;
 }
-
-
 
