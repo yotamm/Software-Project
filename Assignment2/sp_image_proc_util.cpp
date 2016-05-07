@@ -299,9 +299,13 @@ int my_comparator(const void * elem1, const void * elem2){
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 		double*** databaseFeatures, int numberOfImages,
 		int* nFeaturesPerImage) {
-	struct indexedDist bestFeaturesDist[numberOfImages];
-	double min, current;
-	int* result;
+	int* result; //will contain the top 5 score images indices
+	int sum_sizes = 0; //will contain the overall number of features
+	for (int i = 0; i < numberOfImages; i++)
+			sum_sizes += nFeaturesPerImage[i];
+	struct indexedDist bestFeaturesDist[sum_sizes];
+	int index = 0;
+
 	if ((result = (int*) malloc(bestNFeatures * sizeof(int))) == NULL) {
 		printf("An error occurred - allocation failure\n");
 		return NULL;
@@ -311,20 +315,17 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 			|| numberOfImages <= 1|| nFeaturesPerImage==NULL) {
 		return NULL;
 	}
-	//find best matching features from each image
+	//calculate the total dist for each feature of each image
 	for (int i = 0; i < numberOfImages; i++) {
-		min = spL2SquaredDistance(databaseFeatures[i][0], featureA);
-		for (int j = 1; j < nFeaturesPerImage[i]; j++) {
-			current = spL2SquaredDistance(databaseFeatures[i][j], featureA);
-			if (current < min) {
-				min = current;
-			}
+		for (int j = 0; j < nFeaturesPerImage[i]; j++) {
+			bestFeaturesDist[index].val = spL2SquaredDistance(databaseFeatures[i][j], featureA);
+			bestFeaturesDist[index].index = i;
+			index++;
 		}
-		bestFeaturesDist[i].val = min;
-		bestFeaturesDist[i].index = i;
 	}
+
 	//sort the best features and fill the result array
-	qsort(bestFeaturesDist, numberOfImages, sizeof(struct indexedDist),
+	qsort(bestFeaturesDist, sum_sizes, sizeof(struct indexedDist),
 			&my_comparator);
 	for (int k = 0; k < bestNFeatures; k++) {
 		result[k] = bestFeaturesDist[k].index;
