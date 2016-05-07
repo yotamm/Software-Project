@@ -290,19 +290,17 @@ int compareIndexed(const void * elem1, const void * elem2) {
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 		double*** databaseFeatures, int numberOfImages,
 		int* nFeaturesPerImage){
-
 	struct indexedDist bestFeaturesDist[numberOfImages];
-	int result[bestNFeatures];
 	double min, current;
+	int* result;
+	if ((result = (int*)malloc(bestNFeatures * sizeof(int))) == NULL){
+		printf("An error occurred - allocation failure\n");
+		return NULL;
+	}
 	//Check for NULL
 	if (featureA==NULL || databaseFeatures==NULL || numberOfImages <= 1 || nFeaturesPerImage==NULL){
 		return NULL;
 	}
-	/*int* result;
-	if((result=(int*)malloc(sizeof bestNFeatures)) == NULL){
-		return NULL;
-	}*/
-
 	//find best matching features from each image
 	for (int i=0; i<numberOfImages; i++){
 		min=spL2SquaredDistance(databaseFeatures[i][0], featureA);
@@ -315,13 +313,48 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 		bestFeaturesDist[i].dist=min;
 		bestFeaturesDist[i].index=i;
 	}
-
 	//sort the best features and fill the result array
-	qsort(bestFeaturesDist, sizeof(bestFeaturesDist), sizeof(struct indexedDist), &compareIndexed);
+	qsort(bestFeaturesDist, numberOfImages, sizeof(struct indexedDist), &compareIndexed);
 	for (int k=0; k<bestNFeatures; k++){
 			result[k]=bestFeaturesDist[k].index;
 		}
 	return result;
+}
+
+/**
+ * Given an RGB histogram array and an RGB histogram. Calculate the best L2Square distances,
+ * and return the indices of numBest lowest distances.
+ *
+ * @param histArray - Array of RGB histograms
+ * @param numImages - histArray length
+ * @param numBins   - number of bins in the histograms
+ * @param queryHist - histogram to compare to
+ * @param numBest   - number of closest images to return
+ * @return          - the indices of the numBest closest L2Sqaure images from histArray
+ */
+int* spBestRGBHistL2SquareDistance(int*** histArray, int numImages, int numBins, int** queryHist, int numBest){
+		struct indexedDist bestHistDist[numImages];
+		double min, current;
+		int* result;
+		if ((result = (int*)malloc(numBest * sizeof(int))) == NULL){
+			printf("An error occurred - allocation failure\n");
+			return NULL;
+		}
+		//Check for NULL
+		if (queryHist==NULL || histArray==NULL || numImages <= 1 || numBins==NULL || numBest<1){
+			return NULL;
+		}
+		//calculate
+		for (int i=0; i<numImages; i++){
+			bestHistDist[i].dist=spRGBHistL2Distance(histArray[i], queryHist, numBins);
+			bestHistDist[i].index=i;
+		}
+		//sort the best features and fill the result array
+		qsort(bestHistDist, numImages, sizeof(struct indexedDist), &compareIndexed);
+		for (int k=0; k<numBest; k++){
+			result[k]=bestHistDist[k].index;
+		}
+		return result;
 }
 
 

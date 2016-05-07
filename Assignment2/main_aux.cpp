@@ -33,6 +33,14 @@ void freeDMat(double*** data, int xlen, int* sizesArray) {
 	free(data);
 }
 
+/**
+ * a compare function for qsort()
+ */
+int cmpfunc (const void * a, const void * b)
+{
+   return ( *(int*)b - *(int*)a );
+}
+
 /*
  * inits new int mat[xlen][ylen][zlen] using malloc
 

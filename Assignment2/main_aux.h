@@ -28,6 +28,11 @@ void freeMat(int*** data, int xlen, int ylen);
  */
 void freeDMat(double*** data, int xlen, int* sizesArray);
 
+/**
+ * a compare function for qsort()
+ */
+int cmpfunc (const void * a, const void * b);
+
 /*
  * inits new double mat[xlen][ylen][zlen] using malloc
  * @param sizes of rows, cols, depth
