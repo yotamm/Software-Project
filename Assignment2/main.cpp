@@ -165,10 +165,10 @@ int main() {
 
 		//print results for current image
 		printf("Nearest images using global descriptors:\n");
-		printf("%d, %d, %d, %d, %d, \n", closestHist[0], closestHist[1],
+		printf("%d, %d, %d, %d, %d\n", closestHist[0], closestHist[1],
 				closestHist[2], closestHist[3], closestHist[4]);
 		printf("Nearest images using local descriptors:\n");
-		printf("%d, %d, %d, %d, %d, \n", bestSIFTHits[0], bestSIFTHits[1],
+		printf("%d, %d, %d, %d, %d\n", bestSIFTHits[0], bestSIFTHits[1],
 				bestSIFTHits[2], bestSIFTHits[3], bestSIFTHits[4]);
 
 		//TODO :
