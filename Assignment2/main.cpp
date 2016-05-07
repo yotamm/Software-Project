@@ -21,7 +21,7 @@ int main() {
 	double*** descArray; ////3D Matrix that will contain the images descriptors
 	int* nFeatures;
 	int* sizesArray; //this array will contain in i'th cell nFeatures of i'th img
-	int* bestSIFTHits;
+	struct indexedDist* bestSIFTHits;
 	int** queryHist;
 	double** querySIFT;
 	int* closestHist;
@@ -118,7 +118,7 @@ int main() {
 
 	//stages 8 + 9 + 10
 	//allocation and failure handling
-	bestSIFTHits = (int*) malloc(num_imgs * sizeof(int));
+	bestSIFTHits = (indexedDist*) malloc(num_imgs * sizeof(indexedDist));
 	if (bestSIFTHits == NULL) { //malloc failed
 		printf("An error occurred - allocation failure\n");
 		freeMat(histArray, num_imgs, THREE_FOR_RGB); //free histArray
@@ -146,6 +146,10 @@ int main() {
 			free(bestSIFTHits);
 			return 0;
 		}
+		for (int h=0; h<num_imgs; h++){
+			bestSIFTHits[h].index=h;
+			bestSIFTHits[h].val=0;
+		}
 
 		//calculate best SIFT hits and RGB hits
 		queryHist = spGetRGBHist(query_url, num_bins);
@@ -158,7 +162,7 @@ int main() {
 					descArray, num_imgs, sizesArray);
 			for (int j = 0; j < FIVE; j++) {
 				k = closestSIFT[j];
-				bestSIFTHits[k] = bestSIFTHits[k] + 1;
+				bestSIFTHits[k].val = bestSIFTHits[k].val + 1;
 			}
 		}
 		qsort(bestSIFTHits, num_imgs, sizeof(int), cmpfunc);
@@ -168,22 +172,12 @@ int main() {
 		printf("%d, %d, %d, %d, %d\n", closestHist[0], closestHist[1],
 				closestHist[2], closestHist[3], closestHist[4]);
 		printf("Nearest images using local descriptors:\n");
-		printf("%d, %d, %d, %d, %d\n", bestSIFTHits[0], bestSIFTHits[1],
-				bestSIFTHits[2], bestSIFTHits[3], bestSIFTHits[4]);
+		printf("%d, %d, %d, %d, %d\n", bestSIFTHits[0].index, bestSIFTHits[1].index,
+				bestSIFTHits[2].index, bestSIFTHits[3].index, bestSIFTHits[4].index);
 
-		//TODO :
-		/*
-		 * yotam check please if this vars connected to this specific picture
-		 * and not needed anymore
-		 * if so need to free those here
-		 * furthermore, are those vars matrix?
-		 * if so need to free all of their cells
-		 * similary to what we do with descArray for instance
-		 *
-		 */
 		free(closestHist);
-		free(queryHist);
-		free(querySIFT);
+		free_int_Mat(queryHist, THREE_FOR_RGB);
+		free_double_Mat(querySIFT, THREE_FOR_RGB);
 	}
 
 	//not needed

@@ -230,21 +230,12 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 	return dist;
 }
 
-/*
- * struct whom contains index of and image
- * and it's calc dist
- */
-struct indexedDist {
-	int index;
-	double dist;
-};
-
-int compareIndexed(const void * elem1, const void * elem2) {
+/*int compareIndexed(const void * elem1, const void * elem2) {
 	indexedDist *i1, *i2;
 	i1 = (indexedDist*) elem1;
 	i2 = (indexedDist*) elem2;
-	return i1->dist - i2->dist;
-}
+	return i1->val - i2->val;
+}*/
 
 /*
  * compares two indexedDist based on distance as primary
@@ -255,9 +246,9 @@ int my_comparator(const void * elem1, const void * elem2){
 	struct indexedDist* x = (indexedDist*) elem1;
 	struct indexedDist* y = (indexedDist*) elem2;
 
-	if(x->dist == y->dist)
+	if(x->val == y->val)
 		return (x->index - y->index);
-	return (((x->dist - y->dist) > 0) ? 1 : -1);
+	return (((x->val - y->val) > 0) ? 1 : -1);
 }
 
 /**
@@ -326,12 +317,12 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 				min = current;
 			}
 		}
-		bestFeaturesDist[i].dist = min;
+		bestFeaturesDist[i].val = min;
 		bestFeaturesDist[i].index = i;
 	}
 	//sort the best features and fill the result array
 	qsort(bestFeaturesDist, numberOfImages, sizeof(struct indexedDist),
-			&compareIndexed);
+			&my_comparator);
 	for (int k = 0; k < bestNFeatures; k++) {
 		result[k] = bestFeaturesDist[k].index;
 	}
@@ -368,7 +359,7 @@ int* spBestRGBHistL2SquareDistance(int*** histArray, int numImages, int numBins,
 
 	//calculate
 	for (int i = 0; i < numImages; i++) {
-		bestHistDist[i].dist = spRGBHistL2Distance(histArray[i], queryHist,
+		bestHistDist[i].val = spRGBHistL2Distance(histArray[i], queryHist,
 				numBins);
 		bestHistDist[i].index = i;
 	}
