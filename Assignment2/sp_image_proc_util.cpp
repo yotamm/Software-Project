@@ -334,21 +334,25 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
  */
 int* spBestRGBHistL2SquareDistance(int*** histArray, int numImages, int numBins, int** queryHist, int numBest){
 		struct indexedDist bestHistDist[numImages];
-		double min, current;
+		//double min, current;
 		int* result;
+
 		if ((result = (int*)malloc(numBest * sizeof(int))) == NULL){
 			printf("An error occurred - allocation failure\n");
 			return NULL;
 		}
-		//Check for NULL
-		if (queryHist==NULL || histArray==NULL || numImages <= 1 || numBins==NULL || numBest<1){
+
+		//Check for NULL and bad args
+		if (queryHist == NULL || histArray == NULL || numImages <= 1 || numBins <= 0 || numBest < 1){
 			return NULL;
 		}
+
 		//calculate
 		for (int i=0; i<numImages; i++){
 			bestHistDist[i].dist=spRGBHistL2Distance(histArray[i], queryHist, numBins);
 			bestHistDist[i].index=i;
 		}
+
 		//sort the best features and fill the result array
 		qsort(bestHistDist, numImages, sizeof(struct indexedDist), &compareIndexed);
 		for (int k=0; k<numBest; k++){

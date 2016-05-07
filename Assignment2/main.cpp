@@ -10,6 +10,7 @@ using namespace std;
 
 #define THREE_FOR_RGB 3
 #define MAT_NUM_COLS 128
+#define FIVE 5
 
 int main() {
 	//init vars
@@ -113,54 +114,71 @@ int main() {
 		}
 	}
 
-	//stage 8
-	printf("Enter a query image or # to terminate:\n");
-	fflush(NULL);
-	scanf("%s",exit_continue);
-	if (exit_continue[0] == '#'){
-		printf("Exiting...\n");
-		freeMat(histArray, 0, 0); //free histArray
-		freeDMat(descArray, 0, sizesArray); //free descArray
-		free(sizesArray);
-		free(nFeatures);
-		return 0;
-	}
+	//stages 8 + 9 + 10
 	//allocation and failure handling
-	bestSIFTHits=(int*)malloc(num_imgs * sizeof(int));
-	if (bestSIFTHits==NULL){
+	bestSIFTHits = (int*)malloc(num_imgs * sizeof(int));
+	if (bestSIFTHits == NULL){ //malloc failed
 		printf("An error occurred - allocation failure\n");
-		freeMat(histArray, 0, 0); //free histArray
-		freeDMat(descArray, 0, sizesArray); //free descArray
+		freeMat(histArray, num_imgs, THREE_FOR_RGB); //free histArray
+		freeDMat(descArray, num_imgs, sizesArray); //free descArray
 		free(sizesArray);
-		free(bestSIFTHits);
 		free(nFeatures);
 		return -1;
 	}
-	//calculate best SIFT hits and RGB hits
-	int k;
-	queryHist=spGetRGBHist(exit_continue, num_bins);
-	closestHist=spBestRGBHistL2SquareDistance(histArray, num_imgs, num_bins, queryHist, 5);
-	querySIFT=spGetSiftDescriptors(exit_continue, max_num_sift, nFeatures);
-	for (int i=0; i<max_num_sift; i++){
-		closestSIFT = spBestSIFTL2SquaredDistance(5, querySIFT[i], descArray, num_imgs, sizesArray);
-		for(int j=0; j<5; j++){
-			k=closestSIFT[j];
-			bestSIFTHits[k]=bestSIFTHits[k]+1;
+
+	//loop runs until user enters # to terminate
+	while(true){
+		//init var
+		int k;
+
+		printf("Enter a query image or # to terminate:\n");
+		fflush(NULL);
+		scanf("%s",exit_continue);
+		if (exit_continue[0] == '#'){
+			//need to terminate
+			printf("Exiting...\n");
+			freeMat(histArray, num_imgs, THREE_FOR_RGB); //free histArray
+			freeDMat(descArray, num_imgs, sizesArray); //free descArray
+			free(sizesArray);
+			free(nFeatures);
+			return 0;
 		}
+
+		//calculate best SIFT hits and RGB hits
+		queryHist = spGetRGBHist(exit_continue, num_bins);
+		closestHist = spBestRGBHistL2SquareDistance(histArray, num_imgs, num_bins, queryHist, FIVE);
+		querySIFT = spGetSiftDescriptors(exit_continue, max_num_sift, nFeatures);
+		for (int i=0; i < max_num_sift; i++){
+			closestSIFT = spBestSIFTL2SquaredDistance(FIVE, querySIFT[i], descArray, num_imgs, sizesArray);
+			for(int j=0; j < FIVE; j++){
+				k = closestSIFT[j];
+				bestSIFTHits[k] = bestSIFTHits[k] + 1;
+			}
+		}
+		qsort(bestSIFTHits, num_imgs, sizeof(int), cmpfunc);
+
+		//print results
+		printf("Nearest images using global descriptors:\n");
+		printf("%d, %d, %d, %d, %d, \n", closestHist[0], closestHist[1], closestHist[2], closestHist[3], closestHist[4]);
+		printf("Nearest images using local descriptors:\n");
+		printf("%d, %d, %d, %d, %d, \n", bestSIFTHits[0], bestSIFTHits[1], bestSIFTHits[2], bestSIFTHits[3], bestSIFTHits[4]);
+
+
+		//TODO :
+		/*
+		 * yotam check please if this vars connected to this specific picture
+		 * and not needed anymore
+		 * if so need to free those here
+		 * furthermore, are those vars matrix?
+		 * if so need to free all of their cells
+		 * similary to what we do with descArray for instance
+		 */
+		free(bestSIFTHits);
+		free(queryHist);
+		free(querySIFT);
 	}
-	qsort(bestSIFTHits, num_imgs, sizeof(int), cmpfunc);
-	//print results
-	printf("Nearest images using global descriptors:\n");
-	printf("%d, %d, %d, %d, %d, \n", closestHist[0], closestHist[1], closestHist[2], closestHist[3], closestHist[4]);
-	printf("Nearest images using local descriptors:\n");
-	printf("%d, %d, %d, %d, %d, \n", bestSIFTHits[0], bestSIFTHits[1], bestSIFTHits[2], bestSIFTHits[3], bestSIFTHits[4]);
-	//free data
-	freeMat(histArray, 0, 0); //free histArray
-	freeDMat(descArray, 0, sizesArray); //free descArray
-	free(sizesArray);
-	free(bestSIFTHits);
-	free(queryHist);
-	free(querySIFT);
-	free(nFeatures);
+
+	//not needed
+	//but won't harm :)
 	return 0;
 }
