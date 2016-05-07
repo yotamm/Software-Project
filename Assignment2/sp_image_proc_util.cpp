@@ -303,14 +303,13 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 	int sum_sizes = 0; //will contain the overall number of features
 	for (int i = 0; i < numberOfImages; i++)
 			sum_sizes += nFeaturesPerImage[i];
-	struct indexedDist bestFeaturesDist[sum_sizes];
+	struct indexedDist bestFeaturesDist[sum_sizes];//will contain the temporary best results
 	int index = 0;
-
+	//Checks
 	if ((result = (int*) malloc(bestNFeatures * sizeof(int))) == NULL) {
 		printf("An error occurred - allocation failure\n");
 		return NULL;
 	}
-	//Check for NULL
 	if (featureA == NULL || databaseFeatures == NULL
 			|| numberOfImages <= 1|| nFeaturesPerImage==NULL) {
 		return NULL;
@@ -346,16 +345,13 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
  */
 int* spBestRGBHistL2SquareDistance(int*** histArray, int numImages, int numBins,
 		int** queryHist, int numBest) {
-	struct indexedDist bestHistDist[numImages];
-	//double min, current;
+	struct indexedDist bestHistDist[numImages];//will contain the temporary best results
 	int* result;
-
+	//checks
 	if ((result = (int*) malloc(numBest * sizeof(int))) == NULL) {
 		printf("An error occurred - allocation failure\n");
 		return NULL;
 	}
-
-	//Check for NULL and bad args
 	if (queryHist == NULL || histArray == NULL || numImages <= 1 || numBins <= 0
 			|| numBest < 1) {
 		return NULL;

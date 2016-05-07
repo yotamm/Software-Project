@@ -21,7 +21,7 @@ void freeMat(int*** data, int xlen, int ylen);
  */
 void freeDMat(double*** data, int xlen, int* sizesArray);
 
-/*
+/**
  * Note : cannot change sp_image_proc_util.h
  *
  * compares two indexedDist based on distance as primary
@@ -29,13 +29,27 @@ void freeDMat(double*** data, int xlen, int* sizesArray);
  * lower index
  */
 int my_aux_comparator(const void * elem1, const void * elem2);
-//TODO
+
+/**
+ * a struct that will pair a value to an index for sorting purposes
+ */
 struct indexedDist{
 	int index;
 	double val;
 };
 
+/**
+ * free a 2d int matrix
+ * @param toFreeMat - a 2d int matrix
+ * @param x         - the size of toFreeMat[x][] dimension
+ */
 void free_2Dint_Mat(int** toFreeMat, int x);
+
+/**
+ * free a 2d double matrix
+ * @param toFreeMat - a 2d double matrix
+ * @param x         - the size of toFreeMat[x][] dimension
+ */
 void free_2Ddouble_Mat(double** toFreeMat, int x);
 
 #endif /* MAIN_AUX_H_ */

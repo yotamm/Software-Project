@@ -130,9 +130,7 @@ int main() {
 
 	//loop runs until user enters # to terminate
 	while (true) {
-		//init var
 		int k;
-
 		printf("Enter a query image or # to terminate:\n");
 		fflush(NULL);
 		scanf("%s", query_url);
@@ -154,10 +152,10 @@ int main() {
 		//calculate best SIFT hits and RGB hits
 		queryHist = spGetRGBHist(query_url, num_bins);
 		closestHist = spBestRGBHistL2SquareDistance(histArray, num_imgs,
-				num_bins, queryHist, FIVE);
+				num_bins, queryHist, FIVE);//calculate hist results
 		querySIFT = spGetSiftDescriptors(query_url, max_num_sift,
 				nFeatures);
-		for (int i = 0; i < max_num_sift; i++) {
+		for (int i = 0; i < max_num_sift; i++) {//calculate sift results
 			closestSIFT = spBestSIFTL2SquaredDistance(FIVE, querySIFT[i],
 					descArray, num_imgs, sizesArray);
 			for (int j = 0; j < FIVE; j++) {
@@ -170,7 +168,7 @@ int main() {
 		//	printf(">>> value = %f, index = %d\n", bestSIFTHits[i].val, bestSIFTHits[i].index);
 		//	fflush(NULL);
 		//}
-		//print results for current image
+		//print results for current query image
 		printf("Nearest images using global descriptors:\n");
 		printf("%d, %d, %d, %d, %d\n", closestHist[0], closestHist[1],
 				closestHist[2], closestHist[3], closestHist[4]);
