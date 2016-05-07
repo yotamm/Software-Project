@@ -111,6 +111,19 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 		double*** databaseFeatures, int numberOfImages,
 		int* nFeaturesPerImage);
 
+/**
+ * Given an RGB histogram array and an RGB histogram. Calculate the best L2Square distances,
+ * and return the indices of numBest lowest distances.
+ *
+ * @param histArray - Array of RGB histograms
+ * @param numImages - histArray length
+ * @param numBins   - number of bins in the histograms
+ * @param queryHist - histogram to compare to
+ * @param numBest   - number of closest images to return
+ * @return          - the indices of the numBest closest L2Sqaure images from histArray
+ */
+int* spBestRGBHistL2SquareDistance(int*** histArray, int numImages, int numBins, int** queryHist, int numBest);
+
 
 
 #endif /* SP_IMAGE_PROC_UTIL_H_ */

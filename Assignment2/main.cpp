@@ -22,7 +22,8 @@ int main() {
 	int* bestSIFTHits;
 	int** queryHist;
 	double** querySIFT;
-	int closestHist[5], closestSIFT[5];
+	int* closestHist;
+	int* closestSIFT;
 
 	//stage 1
 	printf("Enter images directory path:\n");
@@ -106,22 +107,22 @@ int main() {
 			//wrong url or nBins <= 0 or malloc failed
 			freeMat(histArray, i, THREE_FOR_RGB); //free histArray
 			freeDMat(descArray, i, sizesArray); //free descArray
+			free(sizesArray);
 			free(nFeatures);
 			return -1;
 		}
 	}
-	free(nFeatures);
 
 	//stage 8
-
 	printf("Enter a query image or # to terminate:\n");
 	fflush(NULL);
-	scanf("%d",&exit_continue);
-	if (exit_continue[0] == "#"){
+	scanf("%s",exit_continue);
+	if (exit_continue[0] == '#'){
 		printf("Exiting...\n");
 		freeMat(histArray, 0, 0); //free histArray
 		freeDMat(descArray, 0, sizesArray); //free descArray
 		free(sizesArray);
+		free(nFeatures);
 		return 0;
 	}
 	//allocation and failure handling
@@ -132,24 +133,27 @@ int main() {
 		freeDMat(descArray, 0, sizesArray); //free descArray
 		free(sizesArray);
 		free(bestSIFTHits);
+		free(nFeatures);
 		return -1;
 	}
 	//calculate best SIFT hits and RGB hits
+	int k;
 	queryHist=spGetRGBHist(exit_continue, num_bins);
 	closestHist=spBestRGBHistL2SquareDistance(histArray, num_imgs, num_bins, queryHist, 5);
 	querySIFT=spGetSiftDescriptors(exit_continue, max_num_sift, nFeatures);
 	for (int i=0; i<max_num_sift; i++){
-		closestSIFT=spBestSIFTL2SquaredDistance(5, querySIFT[i], descArray, num_imgs, sizesArray);
+		closestSIFT = spBestSIFTL2SquaredDistance(5, querySIFT[i], descArray, num_imgs, sizesArray);
 		for(int j=0; j<5; j++){
-			bestSIFTHits[closestSIFT[j]]++;
+			k=closestSIFT[j];
+			bestSIFTHits[k]=bestSIFTHits[k]+1;
 		}
 	}
 	qsort(bestSIFTHits, num_imgs, sizeof(int), cmpfunc);
 	//print results
 	printf("Nearest images using global descriptors:\n");
-	printf(closestHist[0]+", "+closestHist[1]+", "+closestHist[2]+", "+closestHist[3]+", "+closestHist[4]+"\n");
+	printf("%d, %d, %d, %d, %d, \n", closestHist[0], closestHist[1], closestHist[2], closestHist[3], closestHist[4]);
 	printf("Nearest images using local descriptors:\n");
-	printf(bestSIFTHits[0]+", "+bestSIFTHits[1]+", "+bestSIFTHits[2]+", "+bestSIFTHits[3]+", "+bestSIFTHits[4]+"\n");
+	printf("%d, %d, %d, %d, %d, \n", bestSIFTHits[0], bestSIFTHits[1], bestSIFTHits[2], bestSIFTHits[3], bestSIFTHits[4]);
 	//free data
 	freeMat(histArray, 0, 0); //free histArray
 	freeDMat(descArray, 0, sizesArray); //free descArray
@@ -157,5 +161,6 @@ int main() {
 	free(bestSIFTHits);
 	free(queryHist);
 	free(querySIFT);
+	free(nFeatures);
 	return 0;
 }
