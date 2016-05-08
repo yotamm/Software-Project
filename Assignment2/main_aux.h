@@ -33,7 +33,7 @@ int my_aux_comparator(const void * elem1, const void * elem2);
 /**
  * a struct that will pair a value to an index for sorting purposes
  */
-struct indexedDist{
+struct indexedDist {
 	int index;
 	double val;
 };

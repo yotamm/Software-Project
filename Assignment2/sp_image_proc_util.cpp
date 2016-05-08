@@ -230,7 +230,6 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 	return dist;
 }
 
-
 /**
  * struct whom contains index of and image
  * and it's calc dist
@@ -245,11 +244,11 @@ struct indexedDist {
  * and if dist is equal returns the one with
  * lower index
  */
-int my_comparator(const void * elem1, const void * elem2){
+int my_comparator(const void * elem1, const void * elem2) {
 	struct indexedDist* x = (indexedDist*) elem1;
 	struct indexedDist* y = (indexedDist*) elem2;
 
-	if(x->val == y->val)
+	if (x->val == y->val)
 		return (x->index - y->index);
 	return (((x->val - y->val) > 0) ? 1 : -1);
 }
@@ -302,20 +301,18 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 	int* result; //will contain the top 5 score images indices
 	int sum_sizes = 0; //will contain the overall number of features
 	for (int i = 0; i < numberOfImages; i++)
-			sum_sizes += nFeaturesPerImage[i];
-	struct indexedDist* bestFeaturesDist;//will contain the temporary best results
+		sum_sizes += nFeaturesPerImage[i];
+	struct indexedDist* bestFeaturesDist; //will contain the temporary best results
 	int index = 0;
 	//Checks
-	if ((bestFeaturesDist = (indexedDist*) malloc(sum_sizes * sizeof(indexedDist))) == NULL) {
+	if ((bestFeaturesDist = (indexedDist*) malloc(
+			sum_sizes * sizeof(indexedDist))) == NULL) {
 		printf("An error occurred - allocation failure\n");
-		free(bestFeaturesDist);
-		free(result);
 		return NULL;
 	}
 	if ((result = (int*) malloc(bestNFeatures * sizeof(int))) == NULL) {
 		printf("An error occurred - allocation failure\n");
 		free(bestFeaturesDist);
-		free(result);
 		return NULL;
 	}
 	if (featureA == NULL || databaseFeatures == NULL
@@ -327,7 +324,8 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
 	//calculate the total dist for each feature of each image
 	for (int i = 0; i < numberOfImages; i++) {
 		for (int j = 0; j < nFeaturesPerImage[i]; j++) {
-			bestFeaturesDist[index].val = spL2SquaredDistance(databaseFeatures[i][j], featureA);
+			bestFeaturesDist[index].val = spL2SquaredDistance(
+					databaseFeatures[i][j], featureA);
 			bestFeaturesDist[index].index = i;
 			index++;
 		}
@@ -356,18 +354,17 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA,
  */
 int* spBestRGBHistL2SquareDistance(int*** histArray, int numImages, int numBins,
 		int** queryHist, int numBest) {
-	struct indexedDist* bestHistDist;//will contain the temporary best results
+	struct indexedDist* bestHistDist; //will contain the temporary best results
 	int* result;
 	//checks
-	if ((bestHistDist = (indexedDist*) malloc(numImages * sizeof(indexedDist))) == NULL) {
+	if ((bestHistDist = (indexedDist*) malloc(numImages * sizeof(indexedDist)))
+			== NULL) {
 		printf("An error occurred - allocation failure\n");
-		free(bestHistDist);
 		return NULL;
 	}
 	if ((result = (int*) malloc(numBest * sizeof(int))) == NULL) {
 		printf("An error occurred - allocation failure\n");
 		free(bestHistDist);
-		free(result);
 		return NULL;
 	}
 	if (queryHist == NULL || histArray == NULL || numImages <= 1 || numBins <= 0

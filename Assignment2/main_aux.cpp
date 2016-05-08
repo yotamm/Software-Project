@@ -40,11 +40,11 @@ void freeDMat(double*** data, int xlen, int* sizesArray) {
  * and if dist is equal returns the one with
  * lower index
  */
-int my_aux_comparator(const void * elem1, const void * elem2){
+int my_aux_comparator(const void * elem1, const void * elem2) {
 	struct indexedDist* x = (indexedDist*) elem1;
 	struct indexedDist* y = (indexedDist*) elem2;
 
-	if(x->val == y->val)
+	if (x->val == y->val)
 		return (x->index - y->index);
 	return (((x->val - y->val) > 0) ? -1 : 1);
 }
