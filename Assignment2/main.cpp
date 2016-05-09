@@ -124,7 +124,6 @@ int main() {
 		freeMat(histArray, num_imgs, THREE_FOR_RGB); //free histArray
 		freeDMat(descArray, num_imgs, sizesArray); //free descArray
 		free(sizesArray);
-		free(nFeatures);
 		return -1;
 	}
 
@@ -140,8 +139,8 @@ int main() {
 			freeMat(histArray, num_imgs, THREE_FOR_RGB); //free histArray
 			freeDMat(descArray, num_imgs, sizesArray); //free descArray
 			free(sizesArray);
-			free(nFeatures);
 			free(bestSIFTHits);
+			free(nFeatures);
 			return 0;
 		}
 		for (int h = 0; h < num_imgs; h++) {
@@ -162,6 +161,7 @@ int main() {
 				k = closestSIFT[j];
 				bestSIFTHits[k].val++;
 			}
+			free(closestSIFT);
 		}
 		//sort
 		qsort(bestSIFTHits, num_imgs, sizeof(indexedDist), &my_aux_comparator);
@@ -178,8 +178,19 @@ int main() {
 		//free alloc for the current query
 		free(closestHist);
 		free_2Dint_Mat(queryHist, THREE_FOR_RGB); //free queryHist
-		free_2Ddouble_Mat(querySIFT, THREE_FOR_RGB); //free querySIFT
+		free_2Ddouble_Mat(querySIFT, *nFeatures); //free querySIFT
 	}
+
+	//~~~free all memory~~~
+	freeMat(histArray, num_imgs, THREE_FOR_RGB); //free histArray
+	freeDMat(descArray, num_imgs, sizesArray); //free descArray
+	free(sizesArray);
+	free(bestSIFTHits);
+	free(closestSIFT);
+	free(closestHist);
+	free_2Dint_Mat(queryHist, THREE_FOR_RGB); //free queryHist
+	free_2Ddouble_Mat(querySIFT, *nFeatures); //free querySIFT
+	free(nFeatures);
 
 	//not needed
 	//but won't harm :)
