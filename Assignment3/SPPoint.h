@@ -33,7 +33,7 @@ typedef struct sp_point_t* SPPoint;
  * - The index of P = index
  *
  * @return
- * NULL in case data is NULL OR dim <=0 OR index <0
+ * NULL in case allocation failure ocurred OR data is NULL OR dim <=0 OR index <0
  * Otherwise, the new point is returned
  */
 SPPoint spPointCreate(double* data, int dim, int index);
@@ -87,7 +87,7 @@ int spPointGetIndex(SPPoint point);
  * @param point - The source point
  * @param axis  - The coordinate of the point which
  * 				  its value will be retreived
- * @assert point!=NULL && index < dim(point)
+ * @assert point!=NULL && axis < dim(point)
  * @return
  * The value of the given coordinate (p_axis will be returned)
  */

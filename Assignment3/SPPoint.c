@@ -19,8 +19,8 @@ struct sp_point_t {
  * - p_i = data[i]
  * - The index of P = index
  *
- * @return
- * NULL in case data is NULL OR dim <=0 OR index <0
+  * @return
+ * NULL in case allocation failure ocurred OR data is NULL OR dim <=0 OR index <0
  * Otherwise, the new point is returned
  */
 SPPoint spPointCreate(double* data, int dim, int index) {
@@ -33,13 +33,11 @@ SPPoint spPointCreate(double* data, int dim, int index) {
 
 	//malloc + check
 	if ((new_point = (SPPoint) malloc(sizeof(SPPoint))) == NULL) {
-		printf("An error occurred - allocation failure\n");
 		return NULL;
 	}
 
 	//malloc + check
 	if ((new_point->data = (double*) malloc(dim * sizeof(double))) == NULL) {
-		printf("An error occurred - allocation failure\n");
 		return NULL;
 	}
 
@@ -118,7 +116,7 @@ int spPointGetIndex(SPPoint point) {
  * @param point - The source point
  * @param axis  - The coordinate of the point which
  * 				  its value will be retreived
- * @assert point!=NULL && index < dim(point)
+ * @assert point!=NULL && axis < dim(point)
  * @return
  * The value of the given coordinate (p_axis will be returned)
  */

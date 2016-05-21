@@ -320,7 +320,8 @@ SP_LOGGER_MSG spLoggerPrintMsg(const char* msg) {
  * (E)rror(W)warning(D)ebug(I)nfo -> EWDI
  * we KNOW : myStr != null && logger is defined
  *
- * prints wanted line (as defined in header) into logger->outputChannel
+ * prints wanted line (as defined in header)
+ * related to ERROR/WARNING/DEBUG/INFO into logger->outputChannel
  *
  * @return
  * SP_LOGGER_WRITE_FAIL			- If Write failure occurred
@@ -341,7 +342,8 @@ SP_LOGGER_MSG printMyEWDI(const char* myStr) {
  * we KNOW : file != null function != null
  * 			&& line >= 0 && logger is defined
  *
- * prints wanted lines (as defined in header) into logger->outputChannel
+ * prints wanted lines (as defined in header)
+ * related to file, function and line into logger->outputChannel
  *
  * @return
  * SP_LOGGER_WRITE_FAIL			- If Write failure occurred
