@@ -5,18 +5,17 @@
 #include <time.h>
 
 #define MAX_OUTTER_LOOP 100
-#define MAX_INNER_LOOP 5
 #define DATA_SIZE 128
 #define MOD1 2000
 #define MOD2 777
 
 //Checks if copy Works
 bool pointBasicCopyTest() {
-	double data[2] = { 1.0, 1.0 };
+	double data[2] = { 2.0, 7.0 };
 	int dim = 2;
 	int index = 1;
 	int i = 0;
-	SPPoint p = spPointCreate(data, dim, index);
+	SPPoint p = spPointCreate((double *) data, dim, index);
 	SPPoint q = spPointCopy(p);
 	ASSERT_TRUE(spPointGetIndex(p) == spPointGetIndex(q));
 	ASSERT_TRUE(spPointGetDimension(p) == spPointGetDimension(q));
@@ -74,7 +73,7 @@ bool myPointTest() {
 		q = spPointCopy(p);
 		z = spPointCreate((double *) dataz, dimz, indexz);
 
-		//checking if p and q index and dist and dim are equals
+		//checking if p's and q's index, distance and dimension are equals
 		ASSERT_TRUE(spPointGetIndex(p) == spPointGetIndex(q));
 		ASSERT_TRUE(spPointGetDimension(p) == spPointGetDimension(q));
 		ASSERT_TRUE(spPointL2SquaredDistance(p, p) == 0.0);
@@ -92,13 +91,11 @@ bool myPointTest() {
 			ASSERT_TRUE(spPointGetAxisCoor(p, k) == spPointGetAxisCoor(q, k));
 		}
 
-		//should destory p, q and z on first time and then should not crash
-		j = 0;
-		for (; j <= MAX_INNER_LOOP; j++) {
-			spPointDestroy(p);
-			spPointDestroy(q);
-			spPointDestroy(z);
-		}
+		//destory p, q and z
+		spPointDestroy(p);
+		spPointDestroy(q);
+		spPointDestroy(z);
+
 	}
 	return true;
 }
@@ -107,5 +104,6 @@ int main() {
 	RUN_TEST(pointBasicCopyTest);
 	RUN_TEST(pointBasicL2Distance);
 	RUN_TEST(myPointTest);
+
 	return 0;
 }

@@ -19,7 +19,7 @@ struct sp_point_t {
  * - p_i = data[i]
  * - The index of P = index
  *
-  * @return
+ * @return
  * NULL in case allocation failure ocurred OR data is NULL OR dim <=0 OR index <0
  * Otherwise, the new point is returned
  */
@@ -32,12 +32,13 @@ SPPoint spPointCreate(double* data, int dim, int index) {
 	}
 
 	//malloc + check
-	if ((new_point = (SPPoint) malloc(sizeof(SPPoint))) == NULL) {
+	if ((new_point = (SPPoint) malloc(sizeof(struct sp_point_t))) == NULL) {
 		return NULL;
 	}
 
 	//malloc + check
 	if ((new_point->data = (double*) malloc(dim * sizeof(double))) == NULL) {
+		free(new_point);
 		return NULL;
 	}
 
@@ -67,7 +68,7 @@ SPPoint spPointCreate(double* data, int dim, int index) {
  */
 SPPoint spPointCopy(SPPoint source) {
 	assert(source != NULL);
-	return spPointCreate(source->data, source->dim, source->index);
+	return spPointCreate(source->data, spPointGetDimension(source), spPointGetIndex(source));
 }
 
 /**
@@ -79,7 +80,7 @@ void spPointDestroy(SPPoint point) {
 		return;
 
 	//Free all memory allocation associated with point
-	free((point->data));
+	free(point->data);
 	free(point);
 	return;
 }
@@ -121,7 +122,7 @@ int spPointGetIndex(SPPoint point) {
  * The value of the given coordinate (p_axis will be returned)
  */
 double spPointGetAxisCoor(SPPoint point, int axis) {
-	assert(point != NULL && axis < spPointGetDimension(point));
+	assert(point != NULL && axis < spPointGetDimension(point) && axis >= 0);
 	return point->data[axis];
 }
 
