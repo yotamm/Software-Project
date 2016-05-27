@@ -1,0 +1,102 @@
+---ERROR---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 85
+- message: Error??
+---WARNING---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 92
+- message: Warning!!
+---DEBUG---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 99
+- message: Debug++
+---INFO---
+- message: Info..
+---ERROR---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 85
+- message: Error??
+---WARNING---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 92
+- message: Warning!!
+---DEBUG---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 99
+- message: Debug++
+---INFO---
+- message: Info..
+---ERROR---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 85
+- message: Error??
+---WARNING---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 92
+- message: Warning!!
+---DEBUG---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 99
+- message: Debug++
+---INFO---
+- message: Info..
+---ERROR---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 85
+- message: Error??
+---WARNING---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 92
+- message: Warning!!
+---DEBUG---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 99
+- message: Debug++
+---INFO---
+- message: Info..
+---ERROR---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 85
+- message: Error??
+---WARNING---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 92
+- message: Warning!!
+---DEBUG---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 99
+- message: Debug++
+---INFO---
+- message: Info..
+---ERROR---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 85
+- message: Error??
+---WARNING---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 92
+- message: Warning!!
+---DEBUG---
+- file: sp_logger_unit_test.c
+- function: myNullArgsLoggerTest
+- line: 99
+- message: Debug++
+---INFO---
+- message: Info..
