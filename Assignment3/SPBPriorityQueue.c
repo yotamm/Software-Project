@@ -6,7 +6,6 @@
 
 struct sp_bp_queue_t {
 	int maxSize;
-	int currentSize;
 	SPList boundedPriorityQueue;
 };
 
@@ -18,7 +17,6 @@ struct sp_bp_queue_t {
  */
 SPBPQueue spBPQueueCreate(int maxSize) {
 	SPBPQueue queue = (SPBPQueue) malloc(sizeof(struct sp_bp_queue_t));
-	queue->currentSize = 0;
 	queue->maxSize = maxSize;
 	queue->boundedPriorityQueue = spListCreate();
 	return queue;
@@ -33,7 +31,6 @@ SPBPQueue spBPQueueCreate(int maxSize) {
  */
 SPBPQueue spBPQueueCopy(SPBPQueue source) {
 	SPBPQueue queue = (SPBPQueue) malloc(sizeof(struct sp_bp_queue_t));
-	queue->currentSize = source->currentSize;
 	queue->maxSize = source->maxSize;
 	queue->boundedPriorityQueue = spListCopy(source->boundedPriorityQueue);
 	return queue;
@@ -60,7 +57,6 @@ void spBPQueueDestroy(SPBPQueue source) {
 void spBPQueueClear(SPBPQueue source) {
 	if(source == NULL)
 		return;
-	source->currentSize = 0; //set size to be 0 since no elems in queue
 	if(!(source->boundedPriorityQueue == NULL))
 		//clear queue if it's not null
 		spListClear(source->boundedPriorityQueue);
@@ -73,7 +69,7 @@ void spBPQueueClear(SPBPQueue source) {
  * @return number of elements in the queue
  */
 int spBPQueueSize(SPBPQueue source) {
-	return source->currentSize;
+	return spListGetSize(source->boundedPriorityQueue);
 }
 
 /*
@@ -100,7 +96,6 @@ SP_BPQUEUE_MSG spBPQueueEnqueue(SPBPQueue source, SPListElement element) {
 		//TODO return proper message enum
 	}
 	if (spBPQueueIsFull(source)) { // remove the highest value in the list because it is full
-		//TODO isn't the last node got highest value? we have spListGetLast or so?
 		spListGetFirst(source->boundedPriorityQueue);
 		for (; j < spListGetSize(source->boundedPriorityQueue); j++) {
 			spListGetNext(source->boundedPriorityQueue);
@@ -110,18 +105,16 @@ SP_BPQUEUE_MSG spBPQueueEnqueue(SPBPQueue source, SPListElement element) {
 
 	SPListElement toCompare = spListGetFirst(source->boundedPriorityQueue);
 	SP_LIST_MSG MSG;
-	for (; i < source->currentSize; i++) {
+	for (; i < spBPQueueSize(source); i++) {
 		if (spListElementCompare(element, toCompare) == -1) {
 			MSG = spListInsertBeforeCurrent(source->boundedPriorityQueue,
 					element);
 			//TODO return proper message enum
-			source->currentSize = spListGetSize(source);
 		}
 		toCompare = spListGetNext(source->boundedPriorityQueue);
 	}
 	MSG = spListInsertLast(source->boundedPriorityQueue, element);
 	//TODO return proper message enum
-	source->currentSize = spListGetSize(source);
 }
 
 /*
@@ -154,7 +147,11 @@ SPListElement spBPQueuePeek(SPBPQueue source) {
  * @return a new copy of the element with the highest value
  */
 SPListElement spBPQueuePeekLast(SPBPQueue source) {
-	return spListElementCopy(source->boundedPriorityQueue->tail->data);
+	spListGetFirst(source->boundedPriorityQueue);
+	for (int j=0 ; j < spListGetSize(source->boundedPriorityQueue); j++) {
+		spListGetNext(source->boundedPriorityQueue);
+	}
+	return spListElementCopy(spListGetCurrent(source->boundedPriorityQueue));
 }
 
 /*
@@ -175,8 +172,13 @@ double spBPQueueMinValue(SPBPQueue source) {
  * @return the max value in the queue
  */
 double spBPQueueMaxValue(SPBPQueue source) {
-	//max value in the last node in queue
-	return (source->boundedPriorityQueue->tail->data->value);
+	//max value is in the last node of the queue
+	spListGetFirst(source->boundedPriorityQueue);
+	for (int j=0 ; j < spListGetSize(source->boundedPriorityQueue); j++) {
+		spListGetNext(source->boundedPriorityQueue);
+	}
+	double res = spListElementGetValue(spListGetCurrent(source->boundedPriorityQueue));
+	return res;
 }
 
 /*
@@ -187,7 +189,7 @@ double spBPQueueMaxValue(SPBPQueue source) {
  */
 bool spBPQueueIsEmpty(SPBPQueue source) {
 	//queue is empty <--> (source->currentSize) == 0
-	return ((source->currentSize) == 0);
+	return ((spBPQueueSize(source)) == 0);
 }
 
 /*
@@ -198,5 +200,5 @@ bool spBPQueueIsEmpty(SPBPQueue source) {
  */
 bool spBPQueueIsFull(SPBPQueue source) {
 	//queue is full <--> (source->currentSize) == (source->maxSize)
-	return ((source->currentSize) == (source->maxSize));
+	return ((spBPQueueSize(source)) == (source->maxSize));
 }
